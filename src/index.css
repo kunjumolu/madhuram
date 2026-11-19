@@ -1,0 +1,277 @@
+@import "tailwindcss";
+
+:root {
+  --gold-primary: #d4af37;
+  --gold-light: #fbeea4;
+  --gold-glow: rgba(212, 175, 55, 0.45);
+  --emerald-deep: #0a1f18;
+  --emerald-dark: #05130e;
+  --ivory-white: #faf7f2;
+  --champagne: #f4ebd9;
+  --text-muted: #c9bea7;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: #060b08;
+  color: #faf7f2;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #070d09;
+}
+::-webkit-scrollbar-thumb {
+  background: #c59f31;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #e5bd47;
+}
+
+/* Typography Classes */
+.font-script {
+  font-family: 'Great Vibes', 'Alex Brush', cursive;
+}
+
+.text-olive-wedding {
+  color: #3e5229;
+  text-shadow: 0 1px 2px rgba(255, 248, 220, 0.5), 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.font-alt-script {
+  font-family: 'Pinyon Script', cursive;
+}
+
+.font-serif-luxury {
+  font-family: 'Cormorant Garamond', Georgia, serif;
+}
+
+.font-heading {
+  font-family: 'Cinzel', serif;
+  letter-spacing: 0.15em;
+}
+
+.font-sans-ui {
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Gold Gradient Text & Effects */
+.gold-text-shimmer {
+  background: linear-gradient(
+    120deg,
+    #ffffff 0%,
+    #fbe397 25%,
+    #d4af37 50%,
+    #ffd700 75%,
+    #fbedb2 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shineGold 6s linear infinite;
+}
+
+.gold-gradient-bg {
+  background: linear-gradient(135deg, #d4af37 0%, #b8860b 50%, #f3d47d 100%);
+}
+
+.gold-border {
+  border: 1px solid rgba(212, 175, 55, 0.35);
+}
+
+.gold-glow-box {
+  box-shadow: 0 0 35px rgba(212, 175, 55, 0.25), inset 0 0 20px rgba(212, 175, 55, 0.08);
+}
+
+.gold-glow-strong {
+  box-shadow: 0 0 50px rgba(212, 175, 55, 0.4), 0 0 20px rgba(251, 238, 164, 0.3);
+}
+
+/* Glassmorphism Luxury Cards */
+.luxury-glass {
+  background: rgba(7, 18, 13, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.luxury-glass-light {
+  background: rgba(16, 32, 24, 0.55);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 175, 55, 0.18);
+}
+
+/* Keyframe Animations */
+@keyframes shineGold {
+  to {
+    background-position: 200% center;
+  }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 1;
+  }
+}
+
+@keyframes floatElement {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(1deg);
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulseSubtle 4s ease-in-out infinite;
+}
+
+.animate-float {
+  animation: floatElement 5s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: floatGentle 6s ease-in-out infinite;
+}
+
+/* Malayalam Title Styling */
+.malayalam-script {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans Malayalam", "Manjari", sans-serif;
+  letter-spacing: 0.05em;
+}
+
+/* Button & Interactive */
+.btn-gold {
+  position: relative;
+  background: linear-gradient(135deg, #dfbc4f 0%, #b8860b 50%, #e2be6d 100%);
+  color: #0b1510;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 14px 34px;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.35);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+.btn-gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(212, 175, 55, 0.55);
+  background: linear-gradient(135deg, #fae28c 0%, #cfa12f 50%, #fae28c 100%);
+}
+
+.btn-gold:active {
+  transform: translateY(1px);
+}
+
+.btn-outline-gold {
+  background: rgba(10, 25, 18, 0.6);
+  color: #f7e6a7;
+  border: 1px solid rgba(212, 175, 55, 0.5);
+  padding: 12px 28px;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(8px);
+}
+
+.btn-outline-gold:hover {
+  background: rgba(212, 175, 55, 0.15);
+  border-color: #f7e6a7;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+/* Reflective glancing sweep from right to left with a 2-second break */
+@keyframes reflectiveGlanceRightToLeft {
+  0% {
+    transform: translateX(200%) skewX(-25deg);
+    opacity: 0;
+  }
+  3% {
+    opacity: 1;
+  }
+  26% {
+    transform: translateX(-200%) skewX(-25deg);
+    opacity: 1;
+  }
+  27%, 100% {
+    transform: translateX(-200%) skewX(-25deg);
+    opacity: 0;
+  }
+}
+
+.reflective-glance-sweep {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 30%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.4) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: reflectiveGlanceRightToLeft 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  mix-blend-mode: overlay;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
+}
+
+/* Royal Rolling Scroll Unrolling Animation */
+@keyframes scrollUnroll {
+  0% {
+    transform: scaleY(0.08) scaleX(0.92);
+    opacity: 0;
+  }
+  60% {
+    transform: scaleY(1.02) scaleX(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    opacity: 1;
+  }
+}
+
+.animate-scroll-unroll {
+  transform-origin: center center;
+  animation: scrollUnroll 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
