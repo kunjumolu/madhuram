@@ -1,22 +1,32 @@
-export const TOTAL_FRAMES = 169;
+export const MADHUREM_FRAMES = 169;
+export const DETAILS_FRAMES = 240;
+export const TOTAL_FRAMES = MADHUREM_FRAMES + DETAILS_FRAMES; // 409 frames total
 
 /**
- * Returns the URL for a specific frame number (1-based index: 1 to 169)
+ * Returns the URL for a specific frame number (1-based index: 1 to 409)
  * Pattern:
- * 1..9   => /madhurem/frame_01.jpg .. /madhurem/frame_09.jpg
- * 10..99 => /madhurem/frame_10.jpg .. /madhurem/frame_99.jpg
- * 100..169 => /madhurem/frame_100.jpg .. /madhurem/frame_169.jpg
+ * 1..169   => /madhurem/frame_01.jpg .. /madhurem/frame_169.jpg
+ * 170..409 => /details/frame_01.jpg .. /details/frame_240.jpg
  */
 export function getFrameUrl(index) {
   const clamped = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(index)));
-  const padded = clamped < 10 ? `0${clamped}` : `${clamped}`;
-  return `/madhurem/frame_${padded}.jpg`;
+  if (clamped <= MADHUREM_FRAMES) {
+    const padded = clamped < 10 ? `0${clamped}` : `${clamped}`;
+    return `/madhurem/frame_${padded}.jpg`;
+  } else {
+    const detailsNum = clamped - MADHUREM_FRAMES;
+    const padded = detailsNum < 10 ? `0${detailsNum}` : `${detailsNum}`;
+    return `/details/frame_${padded}.jpg`;
+  }
 }
 
 /**
  * Preload frames into memory:
  * Loads frame_01 FIRST so it can be immediately shown and frozen on screen,
- * then preloads the remaining frames in the background.
+ * then preloads the remaining frames in the background concurrently.
+ * 
+ * Note: Keeps images as compressed JPEGs in browser cache to avoid exceeding
+ * mobile GPU bitmap memory limits across 409 frames.
  * 
  * @param {Function} onProgress ({ loaded, total, percent }) => void
  * @returns {Promise<HTMLImageElement[]>}
@@ -25,7 +35,7 @@ export function preloadAllFrames(onProgress) {
   return new Promise((resolve) => {
     const images = new Array(TOTAL_FRAMES);
     let loadedCount = 0;
-    const concurrency = 12; // 12 parallel image downloads for fast throughput
+    const concurrency = 16; // 16 parallel image downloads for fast throughput
 
     // Report initial progress
     if (onProgress) {
@@ -72,21 +82,14 @@ export function preloadAllFrames(onProgress) {
           }
         };
 
-        img.onload = () => {
-          if ('decode' in img) {
-            img.decode().then(handleFinished).catch(handleFinished);
-          } else {
-            handleFinished();
-          }
-        };
-
+        img.onload = handleFinished;
         img.onerror = () => {
           console.warn(`Frame ${currentIndex} failed to load, continuing...`);
           handleFinished();
         };
       }
 
-      // Step 2: Concurrently preload frames 2 through 240
+      // Step 2: Concurrently preload frames 2 through 409
       const initialWorkers = Math.min(concurrency, TOTAL_FRAMES - 1);
       for (let i = 0; i < initialWorkers; i++) {
         loadNext();

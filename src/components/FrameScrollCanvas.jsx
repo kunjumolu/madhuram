@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import { TOTAL_FRAMES } from '../utils/frames';
+import { TOTAL_FRAMES, MADHUREM_FRAMES } from '../utils/frames';
 
-const FRAME_160_INDEX = 159; // 0-based index for frame_160.jpg (start slow fade-in)
-const FRAME_169_INDEX = 168; // 0-based index for frame_169.jpg (main final frame)
+const FRAME_160_INDEX = 159; // 0-based index for madhurem/frame_160.jpg (start slow fade-in)
+const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhurem/frame_169.jpg
+const DETAILS_START_INDEX = MADHUREM_FRAMES; // 169: 0-based index for details/frame_01.jpg
+const FINAL_FRAME_INDEX = TOTAL_FRAMES - 1; // 408: 0-based index for details/frame_240.jpg
 
 export default function FrameScrollCanvas({
   images,
@@ -30,7 +32,7 @@ export default function FrameScrollCanvas({
   const currentScrollRef = useRef(0);
   const renderedFrameRef = useRef(0);
 
-  // Smooth crossfade state for final frame
+  // Smooth crossfade state for frame 169 and seamless transitions
   const targetAlphaRef = useRef(0);
   const overlayAlphaRef = useRef(0);
   const stayUntilRef = useRef(0);
@@ -82,7 +84,7 @@ export default function FrameScrollCanvas({
 
   // Draw frame on canvas using cached dimensions
   const drawFrame = useCallback(
-    (frameIndex, overlayAlpha = 0) => {
+    (frameIndex, overlayAlpha = 0, seamAlpha = 0) => {
       const canvas = canvasRef.current;
       if (!canvas) return;
 
@@ -107,14 +109,26 @@ export default function FrameScrollCanvas({
       // 1. Draw base frame
       renderImageToCtx(ctx, baseImg, width, height, 1, baseAspect);
 
-      // 2. Draw frame_169 if overlayAlpha > 0, aligned with baseAspect
-      if (overlayAlpha > 0.005 && images && images[FRAME_169_INDEX]) {
+      // 2. Draw frame_169 overlay if overlayAlpha > 0 (during 160..168 transition)
+      if (overlayAlpha > 0.005 && images && images[MADHUREM_END_INDEX]) {
         renderImageToCtx(
           ctx,
-          images[FRAME_169_INDEX],
+          images[MADHUREM_END_INDEX],
           width,
           height,
           Math.min(1, Math.max(0, overlayAlpha)),
+          baseAspect
+        );
+      }
+
+      // 3. Draw seamless seam crossfade into details/frame_01 at transition point
+      if (seamAlpha > 0.005 && images && images[DETAILS_START_INDEX]) {
+        renderImageToCtx(
+          ctx,
+          images[DETAILS_START_INDEX],
+          width,
+          height,
+          Math.min(1, Math.max(0, seamAlpha)),
           baseAspect
         );
       }
@@ -143,7 +157,7 @@ export default function FrameScrollCanvas({
       canvas.height = targetH;
     }
 
-    drawFrame(renderedFrameRef.current, overlayAlphaRef.current);
+    drawFrame(renderedFrameRef.current, overlayAlphaRef.current, 0);
   }, [drawFrame]);
 
   useEffect(() => {
@@ -165,11 +179,11 @@ export default function FrameScrollCanvas({
   // Initial draw
   useEffect(() => {
     if (images && images.length > 0) {
-      drawFrame(0, 0);
+      drawFrame(0, 0, 0);
     }
   }, [images, drawFrame]);
 
-  // Unified 60fps/120fps animation loop with momentum lerp
+  // Unified 60fps/120fps animation loop with faster, responsive momentum lerp
   useEffect(() => {
     let active = true;
 
@@ -178,10 +192,10 @@ export default function FrameScrollCanvas({
 
       let needsDraw = false;
 
-      // 1. Smoothly interpolate currentScroll towards targetScroll
+      // 1. Smoothly interpolate currentScroll towards targetScroll (0.24 for snappier follow)
       const scrollDiff = targetScrollRef.current - currentScrollRef.current;
       if (Math.abs(scrollDiff) > 0.005) {
-        currentScrollRef.current += scrollDiff * 0.18;
+        currentScrollRef.current += scrollDiff * 0.24;
       } else if (currentScrollRef.current !== targetScrollRef.current) {
         currentScrollRef.current = targetScrollRef.current;
       }
@@ -191,9 +205,10 @@ export default function FrameScrollCanvas({
         onScrollStartRef.current();
       }
 
+      const currentScroll = currentScrollRef.current;
       const frameToDraw = Math.min(
-        FRAME_169_INDEX,
-        Math.max(0, Math.round(currentScrollRef.current))
+        FINAL_FRAME_INDEX,
+        Math.max(0, Math.floor(currentScroll))
       );
 
       if (frameToDraw !== renderedFrameRef.current) {
@@ -201,37 +216,44 @@ export default function FrameScrollCanvas({
         needsDraw = true;
       }
 
-      // 2. Slowly fade in frame_169 starting from frame_160
-      if (currentScrollRef.current >= FRAME_160_INDEX) {
+      // 2. Slowly fade in frame_169 starting from frame_160 up to frame 168
+      if (currentScroll >= FRAME_160_INDEX && currentScroll <= MADHUREM_END_INDEX) {
         const fadeProgress =
-          (currentScrollRef.current - FRAME_160_INDEX) / (FRAME_169_INDEX - FRAME_160_INDEX);
+          (currentScroll - FRAME_160_INDEX) / (MADHUREM_END_INDEX - FRAME_160_INDEX);
         targetAlphaRef.current = Math.min(1, Math.max(0, fadeProgress));
       } else {
         targetAlphaRef.current = 0;
       }
 
-      // 3. Smoothly interpolate overlayAlpha towards targetAlpha
+      // Smoothly interpolate overlayAlpha towards targetAlpha
       const alphaDiff = targetAlphaRef.current - overlayAlphaRef.current;
       if (Math.abs(alphaDiff) > 0.005) {
-        overlayAlphaRef.current += alphaDiff * 0.12;
+        overlayAlphaRef.current += alphaDiff * 0.18;
         needsDraw = true;
       } else if (overlayAlphaRef.current !== targetAlphaRef.current) {
         overlayAlphaRef.current = targetAlphaRef.current;
         needsDraw = true;
       }
 
-      // Track initial stay duration for frame 169
-      if (overlayAlphaRef.current >= 0.98 && !hasStayedRef.current) {
+      // 3. Seam crossfade between frame 168 (madhurem/frame_169) and 169 (details/frame_01)
+      let seamAlpha = 0;
+      if (currentScroll >= MADHUREM_END_INDEX && currentScroll < DETAILS_START_INDEX) {
+        seamAlpha = currentScroll - MADHUREM_END_INDEX;
+        needsDraw = true;
+      }
+
+      // 4. Track initial stay duration for final frame (details/frame_240 at FINAL_FRAME_INDEX)
+      if (currentScroll >= FINAL_FRAME_INDEX - 0.2 && !hasStayedRef.current) {
         hasStayedRef.current = true;
         stayUntilRef.current = performance.now() + 1800; // 1.8s gentle stay
-      } else if (overlayAlphaRef.current < 0.05) {
+      } else if (currentScroll < FINAL_FRAME_INDEX - 1.5) {
         hasStayedRef.current = false;
         stayUntilRef.current = 0;
       }
 
-      // 4. Redraw canvas only when required
+      // 5. Redraw canvas only when required
       if (needsDraw) {
-        drawFrame(renderedFrameRef.current, overlayAlphaRef.current);
+        drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
       }
 
       rAFRef.current = requestAnimationFrame(loop);
@@ -268,27 +290,26 @@ export default function FrameScrollCanvas({
       if (isSecondPageVisibleRef.current) {
         if (deltaY > 0) return; // Keep on second page
 
-        // Scrolling up slides back to frame 169
+        // Scrolling up slides back to final frame of details
         if (deltaY < -10 && now - lastToggleTimeRef.current > 350) {
           lastToggleTimeRef.current = now;
           isSecondPageVisibleRef.current = false;
           setIsSecondPageVisible(false);
-          targetScrollRef.current = FRAME_169_INDEX;
-          currentScrollRef.current = FRAME_169_INDEX;
+          targetScrollRef.current = FINAL_FRAME_INDEX;
+          currentScrollRef.current = FINAL_FRAME_INDEX;
           return;
         }
         return;
       }
 
-      // Case 2: On Frame 169 (at FRAME_169_INDEX with overlayAlpha >= 0.8)
-      const isAtEnd =
-        targetScrollRef.current >= FRAME_169_INDEX - 0.5 && overlayAlphaRef.current >= 0.8;
+      // Case 2: On Final Frame (at FINAL_FRAME_INDEX with details/frame_240)
+      const isAtEnd = targetScrollRef.current >= FINAL_FRAME_INDEX - 0.5;
 
       if (isAtEnd) {
         // Scrolling up immediately breaks any stay and scrolls backward seamlessly
         if (deltaY < 0) {
           stayUntilRef.current = 0;
-          const step = Math.min(-1, deltaY * (isSwipe ? 0.22 : 0.12));
+          const step = Math.min(-1, deltaY * (isSwipe ? 0.35 : 0.22));
           targetScrollRef.current = Math.max(0, targetScrollRef.current + step);
           return;
         }
@@ -306,13 +327,14 @@ export default function FrameScrollCanvas({
         return;
       }
 
-      // Case 3: Normal Scrubbing between Frame 0 and Frame 169 (Forward & Backward)
-      const scale = isSwipe ? 0.22 : 0.12;
+      // Case 3: Normal Scrubbing between Frame 0 and FINAL_FRAME_INDEX (Forward & Backward)
+      // Faster, responsive scrubbing speed as requested ("little more fast")
+      const scale = isSwipe ? 0.35 : 0.22;
       const step = deltaY * scale;
 
       targetScrollRef.current = Math.max(
         0,
-        Math.min(FRAME_169_INDEX, targetScrollRef.current + step)
+        Math.min(FINAL_FRAME_INDEX, targetScrollRef.current + step)
       );
     };
 
@@ -343,16 +365,16 @@ export default function FrameScrollCanvas({
       lastTouchX = currentX;
       lastTouchY = currentY;
 
-      // Swiping right on second page slides back to frame 169
+      // Swiping right on second page slides back to final frame
       if (isSecondPageVisibleRef.current && deltaX < -12 && Math.abs(deltaX) > Math.abs(deltaY)) {
         handleDelta(-30, true);
         return;
       }
 
-      // Swiping left on frame 169 slides to second page
+      // Swiping left on final frame slides to second page
       if (
         !isSecondPageVisibleRef.current &&
-        targetScrollRef.current >= FRAME_169_INDEX - 0.5 &&
+        targetScrollRef.current >= FINAL_FRAME_INDEX - 0.5 &&
         deltaX > 12 &&
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
@@ -376,7 +398,7 @@ export default function FrameScrollCanvas({
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden bg-black select-none z-10 touch-none">
-      {/* Synchronized Horizontal Slider Track: Frame 169 and Second Page touching edge-to-edge */}
+      {/* Synchronized Horizontal Slider Track: Canvas Stage and Second Page touching edge-to-edge */}
       <div
         className="absolute top-0 left-0 w-[200vw] h-full flex flex-row transition-transform duration-600 ease-out will-change-transform"
         style={{
@@ -386,7 +408,7 @@ export default function FrameScrollCanvas({
           outline: 'none',
         }}
       >
-        {/* Panel 1: Stage Canvas (Frames 1 to 169) */}
+        {/* Panel 1: Stage Canvas (Madhurem 1..169 and Details 1..240 seamlessly combined) */}
         <div className="relative w-screen h-full overflow-hidden bg-[#060b08] shrink-0">
           {/* Pristine base frame_01 image underneath canvas to eliminate any canvas initialization blink */}
           <img
