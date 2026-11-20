@@ -3,13 +3,21 @@ import React from 'react';
 export default function LoadingScreen({ percent, isComplete, isDismissed }) {
   return (
     <div
-      className={`fixed inset-0 z-40 overflow-hidden pointer-events-none select-none transition-opacity duration-300 ease-out ${
-        isDismissed ? 'opacity-0' : 'opacity-100'
+      className={`fixed inset-0 z-40 overflow-hidden select-none transition-opacity duration-300 ease-out ${
+        isDismissed ? 'opacity-0 pointer-events-none' : 'opacity-100'
       }`}
     >
-      {/* Center Grass Lawn Overlay (Positioned in 3D ground perspective) */}
+      {/* Background: Pristine First Frame (Frozen Stage Overview while preloading) */}
+      <img
+        src="/madhurem/frame_01.jpg"
+        alt="Wedding Stage"
+        fetchPriority="high"
+        className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
+      />
+
+      {/* Center Grass Lawn Loading Overlay (Positioned in 3D ground perspective) */}
       <div
-        className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none flex flex-col items-center"
+        className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none flex flex-col items-center z-10"
         style={{
           top: '69%',
           left: '55%',
