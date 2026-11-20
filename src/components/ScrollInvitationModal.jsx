@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MapPin, ExternalLink, X, Calendar, Clock, Sparkles } from 'lucide-react';
+import { MapPin, ExternalLink, X } from 'lucide-react';
 
 export default function ScrollInvitationModal({ isOpen, onClose }) {
   // Close on Escape key press
@@ -17,257 +17,198 @@ export default function ScrollInvitationModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md transition-all duration-300"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/65 backdrop-blur-xl transition-all duration-300"
       onClick={onClose}
     >
       {/* Scroll Modal Container with Unroll Animation */}
       <div
-        className="relative w-full max-w-lg md:max-w-xl flex flex-col items-center animate-scroll-unroll select-none"
+        className="relative w-full max-w-[340px] sm:max-w-[390px] flex flex-col items-center animate-scroll-unroll select-none"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Floating Close Button Top-Right */}
+        {/* Floating Antique Brass Close Button */}
         <button
           onClick={onClose}
-          className="absolute -top-3 -right-2 sm:-top-4 sm:-right-4 z-30 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#1b3322] border-2 border-[#d4af37] text-[#fbeea4] flex items-center justify-center hover:scale-110 active:scale-95 transition-transform shadow-xl cursor-pointer"
+          className="absolute -top-3.5 -right-2.5 sm:-top-4 sm:-right-3 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#201408] border border-[#d4af37]/80 text-[#fae28c] flex items-center justify-center hover:scale-110 active:scale-95 transition-all shadow-xl cursor-pointer hover:rotate-90"
           title="Close Invitation"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
-        {/* 1. TOP ROLLER ROD */}
+        {/* 1. TOP ROLLER ROD (Realistic Antique Dark Walnut & Gold Brass) */}
         <div className="relative w-full z-20 flex items-center justify-center">
-          {/* Left Ornate Finial Knob */}
-          <div className="absolute -left-3 sm:-left-5 w-6 h-8 sm:w-8 sm:h-10 rounded-full bg-gradient-to-r from-[#5c4308] via-[#fae28c] to-[#916b15] border border-[#fae28c] shadow-lg flex items-center justify-center">
-            <div className="w-2.5 h-3.5 sm:w-3.5 sm:h-4.5 rounded-full bg-gradient-to-b from-[#ffffff] via-[#d4af37] to-[#422e03]" />
+          {/* Left Turned Finial Knob */}
+          <div className="absolute -left-3 sm:-left-4 w-6 h-7 sm:w-7 sm:h-8 rounded-full bg-gradient-to-r from-[#1f1205] via-[#613c18] to-[#261506] border border-[#cba258]/60 shadow-[0_3px_8px_rgba(0,0,0,0.6)] flex items-center justify-center">
+            <div className="w-2 h-3 sm:w-2.5 sm:h-3.5 rounded-full bg-gradient-to-b from-[#fae28c] via-[#b8860b] to-[#422e03]" />
           </div>
 
-          {/* Central Cylindrical Roller Rod */}
+          {/* Central Cylindrical Roller */}
           <div
-            className="w-full h-5 sm:h-6 rounded-full shadow-md"
+            className="w-full h-4 sm:h-5 rounded-full"
             style={{
               background:
-                'linear-gradient(180deg, #422e03 0%, #b8860b 20%, #fae28c 45%, #ffffff 55%, #d4af37 75%, #422e03 100%)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6)',
+                'linear-gradient(180deg, #1c1006 0%, #4a2d13 25%, #7a4e23 48%, #caa15a 53%, #593515 75%, #180d04 100%)',
+              boxShadow:
+                '0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 230, 180, 0.45), inset 0 -1px 2px rgba(0, 0, 0, 0.9)',
             }}
           />
 
-          {/* Right Ornate Finial Knob */}
-          <div className="absolute -right-3 sm:-right-5 w-6 h-8 sm:w-8 sm:h-10 rounded-full bg-gradient-to-r from-[#916b15] via-[#fae28c] to-[#5c4308] border border-[#fae28c] shadow-lg flex items-center justify-center">
-            <div className="w-2.5 h-3.5 sm:w-3.5 sm:h-4.5 rounded-full bg-gradient-to-b from-[#ffffff] via-[#d4af37] to-[#422e03]" />
+          {/* Right Turned Finial Knob */}
+          <div className="absolute -right-3 sm:-right-4 w-6 h-7 sm:w-7 sm:h-8 rounded-full bg-gradient-to-r from-[#261506] via-[#613c18] to-[#1f1205] border border-[#cba258]/60 shadow-[0_3px_8px_rgba(0,0,0,0.6)] flex items-center justify-center">
+            <div className="w-2 h-3 sm:w-2.5 sm:h-3.5 rounded-full bg-gradient-to-b from-[#fae28c] via-[#b8860b] to-[#422e03]" />
           </div>
         </div>
 
-        {/* 2. SCROLL BODY (WARM WHITE PARCHMENT PAPER) */}
+        {/* 2. SCROLL BODY (Authentic Aged Warm-White Parchment) */}
         <div
-          className="relative w-[96%] sm:w-[97%] max-h-[78vh] sm:max-h-[82vh] overflow-y-auto px-5 py-6 sm:px-8 sm:py-8 border-x-2 border-[#d4af37]/60"
+          className="relative w-[95%] max-h-[82vh] overflow-y-auto px-5 py-6 sm:px-7 sm:py-7 border-x border-[#cba258]/45"
           style={{
             background:
-              'radial-gradient(ellipse at 50% 20%, #ffffff 0%, #fdfcf7 45%, #fbf6ec 80%, #f5ecdc 100%)',
+              'radial-gradient(ellipse at 50% 30%, #fffefb 0%, #faf6eb 55%, #f4ead5 88%, #ece0c7 100%)',
             boxShadow:
-              'inset 0 16px 20px -10px rgba(90, 65, 10, 0.35), inset 0 -16px 20px -10px rgba(90, 65, 10, 0.35), 0 15px 40px rgba(0, 0, 0, 0.6)',
+              'inset 0 0 35px rgba(160, 120, 60, 0.16), inset 0 14px 16px -10px rgba(25, 15, 5, 0.45), inset 0 -14px 16px -10px rgba(25, 15, 5, 0.45), 0 20px 45px rgba(0, 0, 0, 0.65)',
           }}
         >
-          {/* Subtle Golden Filigree Corner Embellishments */}
-          <div className="absolute top-2 left-2 text-[#b8860b]/40 text-xs select-none">
-            ❧
-          </div>
-          <div className="absolute top-2 right-2 text-[#b8860b]/40 text-xs select-none">
-            ☙
-          </div>
-          <div className="absolute bottom-2 left-2 text-[#b8860b]/40 text-xs select-none">
-            ❧
-          </div>
-          <div className="absolute bottom-2 right-2 text-[#b8860b]/40 text-xs select-none">
-            ☙
-          </div>
+          {/* Delicate Antique Inner Filigree Border Frame */}
+          <div className="absolute inset-2 sm:inset-2.5 border border-[#cba258]/30 pointer-events-none rounded-[2px]" />
+          <div className="absolute inset-3 sm:inset-3.5 border border-[#cba258]/15 pointer-events-none rounded-[1px]" />
 
-          <div className="flex flex-col items-center text-center">
+          {/* Vintage Ornamental Corner Flourishes */}
+          <span className="absolute top-3.5 left-3.5 text-[#a88034]/50 text-[10px] select-none pointer-events-none">
+            ❧
+          </span>
+          <span className="absolute top-3.5 right-3.5 text-[#a88034]/50 text-[10px] select-none pointer-events-none">
+            ☙
+          </span>
+          <span className="absolute bottom-3.5 left-3.5 text-[#a88034]/50 text-[10px] select-none pointer-events-none">
+            ❧
+          </span>
+          <span className="absolute bottom-3.5 right-3.5 text-[#a88034]/50 text-[10px] select-none pointer-events-none">
+            ☙
+          </span>
+
+          <div className="relative z-10 flex flex-col items-center text-center">
             {/* Top Syrian Christian Cross Motif */}
-            <div className="flex items-center justify-center gap-2 text-[#8c6d1f] mb-1">
-              <span className="text-xs">✦</span>
-              <span className="text-xl sm:text-2xl font-serif">✝</span>
-              <span className="text-xs">✦</span>
+            <div className="flex items-center justify-center gap-1.5 text-[#85601d] mb-1">
+              <span className="text-[9px] opacity-70">✦</span>
+              <span className="text-lg sm:text-xl font-serif">✝</span>
+              <span className="text-[9px] opacity-70">✦</span>
             </div>
 
-            {/* Title at top first: Madhuramveppu Invitation */}
-            <h2 className="font-heading text-xl sm:text-2xl md:text-3xl font-extrabold tracking-[0.2em] text-[#7a5913] uppercase drop-shadow-sm">
+            {/* Title: Madhuramveppu Invitation */}
+            <h2 className="font-heading text-xs sm:text-sm font-bold tracking-[0.22em] text-[#6e4e13] uppercase drop-shadow-sm">
               Madhuramveppu Invitation
             </h2>
 
             {/* Malayalam Calligraphy Subtitle */}
-            <div className="text-xl sm:text-2xl text-[#a07c24] malayalam-script mt-0.5 mb-1 font-medium">
+            <div className="text-base sm:text-lg text-[#8e6821] malayalam-script mt-0.5 mb-1.5 font-medium">
               മധുരംവെപ്പ്
             </div>
 
-            {/* Elegant Divider */}
-            <div className="flex items-center justify-center gap-2 w-full max-w-xs my-2 text-[#b8860b]/70">
-              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#b8860b]/70 to-[#b8860b]" />
-              <span className="text-xs">❦</span>
-              <div className="flex-1 h-[1px] bg-gradient-to-l from-transparent via-[#b8860b]/70 to-[#b8860b]" />
+            {/* Graceful Vintage Divider */}
+            <div className="flex items-center justify-center gap-2 w-36 sm:w-44 my-1 text-[#b8860b]/60">
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#b8860b]/50 to-transparent" />
+              <span className="text-[10px]">❦</span>
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#b8860b]/50 to-transparent" />
             </div>
 
-            {/* Groom & Bride Names at Top */}
-            <div className="my-2 sm:my-3">
-              <p className="font-heading text-[10px] sm:text-xs uppercase tracking-[0.3em] text-[#8c7443] font-semibold mb-1">
-                Celebrating The Sweet Beginning Of
-              </p>
-              <h3 className="font-script text-4xl sm:text-5xl md:text-6xl text-[#6b4e0e] leading-tight drop-shadow-sm">
-                Alen Reji & Ammu Sanjayan
+            {/* Groom & Bride Section (Spacious Hero) */}
+            <div className="my-3 sm:my-4 flex flex-col items-center">
+              <span className="font-heading text-[9px] uppercase tracking-[0.3em] text-[#8c7443] font-semibold mb-1 opacity-90">
+                Celebrating
+              </span>
+              <h3 className="font-script text-3xl sm:text-4xl text-[#593e0b] leading-tight drop-shadow-sm px-2">
+                Alen Reji
+              </h3>
+              <span className="font-serif-luxury italic text-xs sm:text-sm text-[#8c7443] my-0.5">
+                &amp;
+              </span>
+              <h3 className="font-script text-3xl sm:text-4xl text-[#593e0b] leading-tight drop-shadow-sm px-2">
+                Ammu Sanjayan
               </h3>
             </div>
 
-            {/* Invitation Prose */}
-            <p className="font-serif-luxury italic text-sm sm:text-base text-[#5c4722] max-w-md mx-auto leading-relaxed font-light mb-4">
-              Together with their families, cordially invite your gracious presence with family to celebrate the traditional Syrian Christian sweetening evening as they prepare for Holy Matrimony.
-            </p>
-
-            {/* Family Details Card */}
-            <div className="w-full bg-[#f4ebda]/60 rounded-xl p-3 sm:p-4 border border-[#d4af37]/35 mb-4 text-[#4a391a]">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left border-b sm:border-b-0 sm:border-r border-[#d4af37]/30 pb-2 sm:pb-0 sm:pr-3">
-                  <span className="font-heading text-[10px] uppercase tracking-wider text-[#8a681c] font-bold">
-                    Groom
-                  </span>
-                  <div className="font-serif-luxury text-base font-bold text-[#6b4e0e]">
-                    Alen Reji
-                  </div>
-                  <div className="text-[11px] text-[#635133] leading-tight mt-0.5">
-                    S/o Reji Thomas & Soly Reji
-                  </div>
-                  <div className="text-[10px] text-[#7a6747]">
-                    Sister: Aleena Reji
-                  </div>
-                  <div className="text-[10px] text-[#7a6747] italic">
-                    Chettakulathinkara, Perumbavoor
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left pt-1 sm:pt-0 sm:pl-2">
-                  <span className="font-heading text-[10px] uppercase tracking-wider text-[#8a681c] font-bold">
-                    Bride
-                  </span>
-                  <div className="font-serif-luxury text-base font-bold text-[#6b4e0e]">
-                    Ammu Sanjayan
-                  </div>
-                  <div className="text-[11px] text-[#635133] leading-tight mt-0.5">
-                    D/o Sanjayan Nair & Bindu
-                  </div>
-                  <div className="text-[10px] text-[#7a6747]">
-                    Brother: Dr. Sachu Sanjayan
-                  </div>
-                  <div className="text-[10px] text-[#7a6747] italic">
-                    Sarangi House, Trivandrum
-                  </div>
-                </div>
-              </div>
+            {/* Graceful Vintage Divider */}
+            <div className="flex items-center justify-center gap-2 w-36 sm:w-44 my-1 text-[#b8860b]/60">
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#b8860b]/50 to-transparent" />
+              <span className="text-[10px]">❦</span>
+              <div className="flex-1 h-[1px] bg-gradient-to-r from-transparent via-[#b8860b]/50 to-transparent" />
             </div>
 
-            {/* Date & Time Section */}
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-              {/* Date Box */}
-              <div className="flex items-center gap-3 bg-[#f7efe0]/80 rounded-xl p-3 border border-[#d4af37]/40 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-[#dfbc4f]/25 flex items-center justify-center text-[#7a5913] shrink-0">
-                  <Calendar className="w-5 h-5" />
+            {/* Minimal & Elegant Event Details */}
+            <div className="my-3 sm:my-4 space-y-3 w-full">
+              {/* Date & Time */}
+              <div className="flex flex-col items-center">
+                <span className="font-heading text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#8a681c] font-bold mb-0.5">
+                  Date &amp; Time
+                </span>
+                <div className="font-serif-luxury text-sm sm:text-base font-bold text-[#453009] tracking-wide">
+                  Friday, 08 January 2027
                 </div>
-                <div className="text-left">
-                  <div className="font-heading text-[10px] uppercase tracking-wider text-[#8c7443] font-bold">
-                    Day & Date
-                  </div>
-                  <div className="font-serif-luxury text-base sm:text-lg font-bold text-[#5c4308] leading-tight">
-                    Friday, Jan 08, 2027
-                  </div>
-                  <div className="text-[10px] text-[#7a6747]">
-                    Vrischigam 13, 1202 ME
-                  </div>
+                <div className="font-serif-luxury italic text-xs sm:text-sm text-[#664e24]">
+                  6:00 PM Onwards
                 </div>
               </div>
 
-              {/* Time Box */}
-              <div className="flex items-center gap-3 bg-[#f7efe0]/80 rounded-xl p-3 border border-[#d4af37]/40 shadow-sm">
-                <div className="w-10 h-10 rounded-full bg-[#dfbc4f]/25 flex items-center justify-center text-[#7a5913] shrink-0">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div className="text-left">
-                  <div className="font-heading text-[10px] uppercase tracking-wider text-[#8c7443] font-bold">
-                    Ceremony Time
-                  </div>
-                  <div className="font-serif-luxury text-base sm:text-lg font-bold text-[#5c4308] leading-tight">
-                    6:00 PM IST
-                  </div>
-                  <div className="text-[10px] text-[#7a6747]">
-                    Followed by Dinner & Fellowship
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Venue Details & Map Button */}
-            <div className="w-full bg-[#f4ebda]/70 rounded-xl p-4 border border-[#d4af37]/45 mb-4 text-center">
-              <div className="inline-flex items-center gap-1.5 text-[#7a5913] mb-1">
-                <MapPin className="w-4 h-4 text-[#8a681c]" />
-                <span className="font-heading text-xs uppercase tracking-[0.2em] font-bold">
+              {/* Venue */}
+              <div className="flex flex-col items-center pt-1">
+                <span className="font-heading text-[8px] sm:text-[9px] uppercase tracking-[0.25em] text-[#8a681c] font-bold mb-0.5">
                   Celebration Venue
                 </span>
+                <div className="font-serif-luxury text-base sm:text-lg font-bold text-[#453009] tracking-wide">
+                  The Grand Orchard
+                </div>
+                <div className="font-serif-luxury text-xs text-[#6e5831] max-w-[240px] leading-snug">
+                  St. Thomas Hall &amp; Gardens, Kottayam
+                </div>
               </div>
-              <div className="font-serif-luxury text-xl sm:text-2xl font-bold text-[#5c4308] mb-0.5">
-                The Grand Orchard
-              </div>
-              <div className="text-xs sm:text-sm text-[#635133] mb-3 font-light">
-                St. Thomas Hall & Gardens, Kottayam, Kerala
-              </div>
+            </div>
 
-              {/* Map Redirection Link Button */}
+            {/* Aesthetic Vintage Google Maps Link Button */}
+            <div className="mt-2 mb-3">
               <a
                 href="https://maps.google.com/?q=St.+Thomas+Hall+and+Gardens+Kottayam"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-semibold tracking-wider uppercase text-[#0d1e13] transition-all duration-300 hover:scale-105 active:scale-95 shadow-md cursor-pointer border border-[#b8860b]/40"
+                className="inline-flex items-center justify-center gap-1.5 px-5 py-2 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase text-[#261706] transition-all duration-300 hover:scale-105 active:scale-95 shadow-md cursor-pointer border border-[#cba258]/60 hover:shadow-lg"
                 style={{
                   background:
-                    'linear-gradient(135deg, #dfbc4f 0%, #fbeea4 40%, #cfa12f 80%, #dfbc4f 100%)',
+                    'linear-gradient(135deg, #e4c46f 0%, #faeec2 45%, #d1a53e 85%, #e4c46f 100%)',
                 }}
               >
-                <MapPin className="w-4 h-4 text-[#0d1e13]" />
-                <span>View on Google Maps</span>
-                <ExternalLink className="w-3.5 h-3.5 text-[#0d1e13]" />
+                <MapPin className="w-3.5 h-3.5 text-[#261706]" />
+                <span>View Venue Map</span>
+                <ExternalLink className="w-3 h-3 text-[#261706] opacity-75" />
               </a>
             </div>
 
-            {/* Blessing Note */}
-            <div className="text-center text-[11px] text-[#7a6747] italic">
-              &ldquo;May their sweet journey together be filled with eternal joy, love, and grace.&rdquo;
+            {/* Minimal Romantic Blessing Note */}
+            <div className="mt-1 text-[10px] sm:text-[11px] font-serif-luxury italic text-[#7a643b] max-w-[260px] leading-relaxed">
+              &ldquo;Together with their families, cordially invite you to celebrate this sweet beginning.&rdquo;
             </div>
-
-            {/* Bottom Close Button inside Scroll */}
-            <button
-              onClick={onClose}
-              className="mt-4 px-6 py-1.5 rounded-full text-xs tracking-wider uppercase text-[#7a5913] border border-[#d4af37]/50 hover:bg-[#d4af37]/15 transition-colors cursor-pointer"
-            >
-              Close Scroll
-            </button>
           </div>
         </div>
 
-        {/* 3. BOTTOM ROLLER ROD */}
+        {/* 3. BOTTOM ROLLER ROD (Realistic Antique Dark Walnut & Gold Brass) */}
         <div className="relative w-full z-20 flex items-center justify-center">
-          {/* Left Ornate Finial Knob */}
-          <div className="absolute -left-3 sm:-left-5 w-6 h-8 sm:w-8 sm:h-10 rounded-full bg-gradient-to-r from-[#5c4308] via-[#fae28c] to-[#916b15] border border-[#fae28c] shadow-lg flex items-center justify-center">
-            <div className="w-2.5 h-3.5 sm:w-3.5 sm:h-4.5 rounded-full bg-gradient-to-b from-[#ffffff] via-[#d4af37] to-[#422e03]" />
+          {/* Left Turned Finial Knob */}
+          <div className="absolute -left-3 sm:-left-4 w-6 h-7 sm:w-7 sm:h-8 rounded-full bg-gradient-to-r from-[#1f1205] via-[#613c18] to-[#261506] border border-[#cba258]/60 shadow-[0_3px_8px_rgba(0,0,0,0.6)] flex items-center justify-center">
+            <div className="w-2 h-3 sm:w-2.5 sm:h-3.5 rounded-full bg-gradient-to-b from-[#fae28c] via-[#b8860b] to-[#422e03]" />
           </div>
 
-          {/* Central Cylindrical Roller Rod */}
+          {/* Central Cylindrical Roller */}
           <div
-            className="w-full h-5 sm:h-6 rounded-full shadow-md"
+            className="w-full h-4 sm:h-5 rounded-full"
             style={{
               background:
-                'linear-gradient(180deg, #422e03 0%, #b8860b 20%, #fae28c 45%, #ffffff 55%, #d4af37 75%, #422e03 100%)',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 2px rgba(255, 255, 255, 0.6)',
+                'linear-gradient(180deg, #1c1006 0%, #4a2d13 25%, #7a4e23 48%, #caa15a 53%, #593515 75%, #180d04 100%)',
+              boxShadow:
+                '0 4px 10px rgba(0, 0, 0, 0.6), inset 0 1px 1px rgba(255, 230, 180, 0.45), inset 0 -1px 2px rgba(0, 0, 0, 0.9)',
             }}
           />
 
-          {/* Right Ornate Finial Knob */}
-          <div className="absolute -right-3 sm:-right-5 w-6 h-8 sm:w-8 sm:h-10 rounded-full bg-gradient-to-r from-[#916b15] via-[#fae28c] to-[#5c4308] border border-[#fae28c] shadow-lg flex items-center justify-center">
-            <div className="w-2.5 h-3.5 sm:w-3.5 sm:h-4.5 rounded-full bg-gradient-to-b from-[#ffffff] via-[#d4af37] to-[#422e03]" />
+          {/* Right Turned Finial Knob */}
+          <div className="absolute -right-3 sm:-right-4 w-6 h-7 sm:w-7 sm:h-8 rounded-full bg-gradient-to-r from-[#261506] via-[#613c18] to-[#1f1205] border border-[#cba258]/60 shadow-[0_3px_8px_rgba(0,0,0,0.6)] flex items-center justify-center">
+            <div className="w-2 h-3 sm:w-2.5 sm:h-3.5 rounded-full bg-gradient-to-b from-[#fae28c] via-[#b8860b] to-[#422e03]" />
           </div>
         </div>
       </div>
