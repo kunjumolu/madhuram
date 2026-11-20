@@ -28,9 +28,10 @@ export default function LoadingScreen({ percent, isComplete, onFinish }) {
 
       {/* Center Grass Lawn Loading Overlay (Positioned between banquet table and chairs in 3D ground perspective) */}
       <div
-        className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none flex flex-col items-center"
+        className="absolute -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none flex flex-col items-center"
         style={{
           top: '69%',
+          left: '55%',
         }}
       >
         <div className="grass-perspective flex flex-col items-center text-center">
