@@ -598,7 +598,7 @@ export default function FrameScrollCanvas({
         <div className="relative w-screen h-full overflow-hidden bg-[#060b08] shrink-0">
           {/* Pristine base frame_01 image underneath canvas to eliminate any canvas initialization blink */}
           <img
-            src="/madhurem/frame_01.jpg"
+            src="/madhurem/frame_01.webp"
             alt="Wedding Stage"
             className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
           />

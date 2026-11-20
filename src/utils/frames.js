@@ -12,11 +12,11 @@ export function getFrameUrl(index) {
   const clamped = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(index)));
   if (clamped <= MADHUREM_FRAMES) {
     const padded = clamped < 10 ? `0${clamped}` : `${clamped}`;
-    return `/madhurem/frame_${padded}.jpg`;
+    return `/madhurem/frame_${padded}.webp`;
   } else {
     const detailsNum = clamped - MADHUREM_FRAMES;
     const padded = detailsNum < 10 ? `0${detailsNum}` : `${detailsNum}`;
-    return `/details/frame_${padded}.jpg`;
+    return `/details/frame_${padded}.webp`;
   }
 }
 

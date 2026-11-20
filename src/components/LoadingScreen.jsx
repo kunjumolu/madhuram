@@ -9,7 +9,7 @@ export default function LoadingScreen({ percent, isComplete, isDismissed }) {
     >
       {/* Background: Pristine First Frame (Frozen Stage Overview while preloading) */}
       <img
-        src="/madhurem/frame_01.jpg"
+        src="/madhurem/frame_01.webp"
         alt="Wedding Stage"
         fetchPriority="high"
         className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
