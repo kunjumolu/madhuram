@@ -67,20 +67,20 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
           className="w-full h-full object-contain rounded-lg drop-shadow-[0_20px_45px_rgba(0,0,0,0.75)] select-none pointer-events-none"
         />
 
-        {/* RSVP Handwritten Form Container directly on the parchment paper */}
+        {/* RSVP Handwritten Form Container placed directly in the middle of the parchment paper */}
         <div
-          className="absolute inset-0 flex flex-col pointer-events-auto overflow-y-auto overflow-x-hidden"
+          className="absolute left-0 right-0 top-[20%] bottom-[12%] flex flex-col justify-center pointer-events-auto overflow-y-auto overflow-x-hidden"
           style={{
-            paddingTop: '12%',
-            paddingBottom: '8%',
             paddingLeft: '21%',
-            paddingRight: '9%',
+            paddingRight: '10%',
+            paddingTop: '2%',
+            paddingBottom: '2%',
           }}
         >
           {!isSubmitted ? (
-            <form onSubmit={handleSubmit} className="my-auto flex flex-col">
-              {/* Form Input Fields: Shifted right to avoid rose/vines, high contrast dark text, crisp ruled lines */}
-              <div className="flex flex-col gap-3 sm:gap-3.5">
+            <form onSubmit={handleSubmit} className="w-full flex flex-col justify-center">
+              {/* Form Input Fields: Centered in paper, shifted right to avoid rose/vines, high contrast dark text */}
+              <div className="flex flex-col gap-2.5 sm:gap-3">
                 {/* 1. Name Field */}
                 <div className="flex flex-col">
                   <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
@@ -92,7 +92,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Write your name here..."
-                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-0.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -167,7 +167,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       value={guestCount}
                       onChange={(e) => setGuestCount(e.target.value)}
                       placeholder="1"
-                      className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
+                      className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-0.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                       style={{
                         boxShadow: 'none',
                       }}
@@ -188,7 +188,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={wishes}
                     onChange={(e) => setWishes(e.target.value)}
                     placeholder="Leave your blessings and warm words..."
-                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-semibold text-base sm:text-lg md:text-xl py-1 px-0.5 focus:outline-none resize-none placeholder:text-[#4a2c17]/75 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-semibold text-base sm:text-lg md:text-xl py-0.5 px-0.5 focus:outline-none resize-none placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -196,8 +196,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* Submit RSVP Button: positioned snuggly right after the last text field, NOT at the bottom */}
-              <div className="flex justify-center pt-3 sm:pt-4 pb-1">
+              {/* Submit RSVP Button: positioned snuggly upwards right below the last text field */}
+              <div className="flex justify-center pt-1.5 sm:pt-2">
                 <button
                   type="submit"
                   className="group cursor-pointer bg-transparent border-none p-0 focus:outline-none flex flex-col items-center transition-transform duration-200 hover:scale-105 active:scale-95"
@@ -221,7 +221,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
             </form>
           ) : (
             /* Heartfelt Handwritten Confirmation Screen */
-            <div className="h-full flex flex-col items-center justify-center text-center py-6 px-2 my-auto">
+            <div className="flex flex-col items-center justify-center text-center py-4 px-2 my-auto">
               <span
                 className="font-script text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a0a03] leading-tight"
                 style={{
