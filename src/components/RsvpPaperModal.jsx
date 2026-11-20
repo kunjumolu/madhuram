@@ -16,13 +16,13 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
 
     setIsSubmitted(true);
 
-    // Subtle celebratory golden-rose petal confetti
+    // Celebratory golden rose petal confetti
     try {
       confetti({
-        particleCount: 50,
-        spread: 65,
+        particleCount: 55,
+        spread: 70,
         origin: { y: 0.55 },
-        colors: ['#d4af37', '#f0b256', '#8b1d24', '#fcedd7', '#4a2e1b'],
+        colors: ['#d4af37', '#f0b256', '#8b1d24', '#fcedd7', '#1a0a03'],
       });
     } catch (err) {
       // Confetti fallback
@@ -35,7 +35,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
       onClick={onClose}
     >
       <div
-        className="relative w-[94vw] max-w-[480px] sm:max-w-[520px] md:max-w-[560px] max-h-[92vh] animate-popup-3d flex items-center justify-center"
+        className="relative w-[94vw] max-w-[490px] sm:max-w-[530px] md:max-w-[570px] max-h-[92vh] animate-popup-3d flex items-center justify-center"
         style={{ aspectRatio: '941 / 1672' }}
         onClick={(e) => e.stopPropagation()}
       >
@@ -71,33 +71,39 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
         <div
           className="absolute inset-0 flex flex-col justify-between pointer-events-auto overflow-y-auto overflow-x-hidden"
           style={{
-            padding: '7% 12% 8% 12%',
+            padding: '7% 11% 7% 11%',
           }}
         >
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="h-full flex flex-col justify-between">
-              {/* Top Header: Situated to the right of the red rose in the corner */}
-              <div className="flex justify-end pt-1 sm:pt-2">
-                <div className="text-right">
-                  <h2
-                    className="font-script text-3xl sm:text-4xl md:text-5xl text-[#3e2415] tracking-wide leading-none"
+              {/* Submit button placed right before the text field section (RSVP title removed from top) */}
+              <div className="flex justify-end pt-2 sm:pt-3 pb-1">
+                <button
+                  type="submit"
+                  className="group cursor-pointer bg-transparent border-none p-0 focus:outline-none flex flex-col items-end transition-transform duration-200 hover:scale-105 active:scale-95"
+                  style={{
+                    boxShadow: 'none',
+                    outline: 'none',
+                  }}
+                  aria-label="Submit RSVP"
+                >
+                  <span
+                    className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] group-hover:text-[#8b1d24] tracking-wide transition-colors"
                     style={{
-                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.5)',
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.7)',
                     }}
                   >
-                    RSVP
-                  </h2>
-                  <p className="font-serif-luxury italic text-xs sm:text-sm text-[#5c3a21]/80 mt-0.5">
-                    Madhuramveppu Celebration
-                  </p>
-                </div>
+                    Submit RSVP ♡
+                  </span>
+                  <div className="w-24 sm:w-32 h-0.5 sm:h-1 bg-[#1a0a03] mt-0.5 rounded-full" />
+                </button>
               </div>
 
-              {/* Form Input Fields (Handwritten style, no borders or overlays, single ruled lines) */}
-              <div className="flex flex-col gap-2.5 sm:gap-3.5 my-auto pt-1 sm:pt-2">
+              {/* Form Input Fields: Increased size, high contrast dark text, crisp ruled lines */}
+              <div className="flex flex-col gap-3.5 sm:gap-4.5 my-auto pt-1 sm:pt-2">
                 {/* 1. Name Field */}
                 <div className="flex flex-col">
-                  <label className="font-script text-xl sm:text-2xl text-[#3e2415] leading-tight">
+                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
                     Your Name
                   </label>
                   <input
@@ -106,7 +112,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Write your name here..."
-                    className="w-full bg-transparent border-none border-b border-[#5c3a21]/50 focus:border-[#3e2415] text-[#3e2415] font-serif-luxury italic text-base sm:text-lg py-0.5 px-0.5 focus:outline-none placeholder:text-[#8a684f]/60 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -115,29 +121,29 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
 
                 {/* 2. Attendance Selection (I will be coming / I won't be able to make it) */}
                 <div className="flex flex-col">
-                  <span className="font-script text-xl sm:text-2xl text-[#3e2415] leading-tight mb-1">
+                  <span className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight mb-1.5">
                     Will you attend?
                   </span>
-                  <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <div className="flex flex-col gap-2 sm:gap-2.5">
                     {/* Option 1: I will be coming (Default) */}
                     <div
                       onClick={() => setAttending('yes')}
-                      className="flex items-center gap-2 cursor-pointer group select-none py-0.5"
+                      className="flex items-center gap-2.5 cursor-pointer group select-none py-0.5"
                     >
                       <span
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border border-[#5c3a21] flex items-center justify-center transition-all ${
-                          attending === 'yes' ? 'bg-[#3e2415]' : 'bg-transparent'
+                        className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-[#1a0a03] flex items-center justify-center transition-all ${
+                          attending === 'yes' ? 'bg-[#1a0a03]' : 'bg-transparent'
                         }`}
                       >
                         {attending === 'yes' && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#fcedd7]" />
+                          <span className="w-2 h-2 rounded-full bg-[#fcedd7]" />
                         )}
                       </span>
                       <span
-                        className={`font-serif-luxury italic text-sm sm:text-base transition-colors ${
+                        className={`font-serif-luxury italic text-base sm:text-lg md:text-xl transition-colors ${
                           attending === 'yes'
-                            ? 'text-[#3e2415] font-semibold'
-                            : 'text-[#6d4d33] opacity-80'
+                            ? 'text-[#1a0a03] font-bold'
+                            : 'text-[#3e2415] opacity-85 font-medium'
                         }`}
                       >
                         I will be coming
@@ -147,22 +153,22 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     {/* Option 2: I won't be able to make it */}
                     <div
                       onClick={() => setAttending('no')}
-                      className="flex items-center gap-2 cursor-pointer group select-none py-0.5"
+                      className="flex items-center gap-2.5 cursor-pointer group select-none py-0.5"
                     >
                       <span
-                        className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border border-[#5c3a21] flex items-center justify-center transition-all ${
-                          attending === 'no' ? 'bg-[#3e2415]' : 'bg-transparent'
+                        className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-[#1a0a03] flex items-center justify-center transition-all ${
+                          attending === 'no' ? 'bg-[#1a0a03]' : 'bg-transparent'
                         }`}
                       >
                         {attending === 'no' && (
-                          <span className="w-1.5 h-1.5 rounded-full bg-[#fcedd7]" />
+                          <span className="w-2 h-2 rounded-full bg-[#fcedd7]" />
                         )}
                       </span>
                       <span
-                        className={`font-serif-luxury italic text-sm sm:text-base transition-colors ${
+                        className={`font-serif-luxury italic text-base sm:text-lg md:text-xl transition-colors ${
                           attending === 'no'
-                            ? 'text-[#3e2415] font-semibold'
-                            : 'text-[#6d4d33] opacity-80'
+                            ? 'text-[#1a0a03] font-bold'
+                            : 'text-[#3e2415] opacity-85 font-medium'
                         }`}
                       >
                         I won't be able to make it
@@ -174,7 +180,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                 {/* 3. Number of Guests (Only visible if 'I will be coming' is selected) */}
                 {attending === 'yes' && (
                   <div className="flex flex-col transition-all duration-300">
-                    <label className="font-script text-xl sm:text-2xl text-[#3e2415] leading-tight">
+                    <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
                       Number of Guests
                     </label>
                     <input
@@ -185,7 +191,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       value={guestCount}
                       onChange={(e) => setGuestCount(e.target.value)}
                       placeholder="1"
-                      className="w-full bg-transparent border-none border-b border-[#5c3a21]/50 focus:border-[#3e2415] text-[#3e2415] font-serif-luxury italic text-base sm:text-lg py-0.5 px-0.5 focus:outline-none placeholder:text-[#8a684f]/60 transition-colors"
+                      className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                       style={{
                         boxShadow: 'none',
                       }}
@@ -195,9 +201,9 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
 
                 {/* 4. Wishes or Messages (Optional) */}
                 <div className="flex flex-col">
-                  <label className="font-script text-xl sm:text-2xl text-[#3e2415] leading-tight">
+                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
                     Wishes or Messages{' '}
-                    <span className="font-serif-luxury italic text-xs text-[#5c3a21]/75">
+                    <span className="font-serif-luxury italic text-sm sm:text-base opacity-75 font-normal">
                       (Optional)
                     </span>
                   </label>
@@ -206,7 +212,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={wishes}
                     onChange={(e) => setWishes(e.target.value)}
                     placeholder="Leave your blessings and warm words..."
-                    className="w-full bg-transparent border-none border-b border-[#5c3a21]/50 focus:border-[#3e2415] text-[#3e2415] font-serif-luxury italic text-sm sm:text-base py-0.5 px-0.5 focus:outline-none resize-none placeholder:text-[#8a684f]/60 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-semibold text-base sm:text-lg md:text-xl py-1 px-0.5 focus:outline-none resize-none placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -214,7 +220,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                 </div>
               </div>
 
-              {/* 5. Handwritten Submit Button */}
+              {/* Bottom Submit RSVP Button */}
               <div className="flex justify-center pt-2 pb-1">
                 <button
                   type="submit"
@@ -223,16 +229,17 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     boxShadow: 'none',
                     outline: 'none',
                   }}
+                  aria-label="Submit RSVP"
                 >
                   <span
-                    className="font-script text-2xl sm:text-3xl text-[#3e2415] group-hover:text-[#6b3f1f] tracking-wide transition-colors"
+                    className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] group-hover:text-[#8b1d24] tracking-wide transition-colors"
                     style={{
-                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.7)',
                     }}
                   >
                     Submit RSVP ♡
                   </span>
-                  <div className="w-20 sm:w-28 h-0.5 bg-gradient-to-r from-transparent via-[#5c3a21]/60 to-transparent mt-0.5" />
+                  <div className="w-24 sm:w-32 h-0.5 sm:h-1 bg-[#1a0a03] mt-0.5 rounded-full" />
                 </button>
               </div>
             </form>
@@ -240,15 +247,15 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
             /* Heartfelt Handwritten Confirmation Screen */
             <div className="h-full flex flex-col items-center justify-center text-center py-6 px-2 my-auto">
               <span
-                className="font-script text-3xl sm:text-4xl text-[#3e2415] leading-tight"
+                className="font-script text-3xl sm:text-4xl md:text-5xl font-bold text-[#1a0a03] leading-tight"
                 style={{
-                  textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+                  textShadow: '0 1px 2px rgba(255, 255, 255, 0.7)',
                 }}
               >
                 {attending === 'yes' ? 'We Rejoice with You!' : 'Thank You for Letting Us Know'}
               </span>
 
-              <p className="font-serif-luxury italic text-base sm:text-lg text-[#3e2415] mt-3 leading-relaxed max-w-[320px]">
+              <p className="font-serif-luxury italic font-semibold text-lg sm:text-xl text-[#1a0a03] mt-3 leading-relaxed max-w-[320px]">
                 {attending === 'yes'
                   ? `Dearest ${name || 'Friend'}, your presence has been warmly noted for ${
                       guestCount || 1
@@ -257,8 +264,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
               </p>
 
               {wishes.trim() && (
-                <div className="mt-3 p-2 border-t border-b border-[#5c3a21]/30 max-w-[300px]">
-                  <p className="font-alt-script text-base text-[#5c3a21] italic">
+                <div className="mt-3 p-2 border-t border-b border-[#2a1206]/40 max-w-[300px]">
+                  <p className="font-alt-script text-lg sm:text-xl text-[#1a0a03] italic font-medium">
                     "{wishes.trim()}"
                   </p>
                 </div>
@@ -267,7 +274,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
               <button
                 type="button"
                 onClick={() => setIsSubmitted(false)}
-                className="mt-6 font-script text-lg sm:text-xl text-[#5c3a21] hover:text-[#3e2415] underline cursor-pointer bg-transparent border-none focus:outline-none transition-colors"
+                className="mt-6 font-script text-xl sm:text-2xl font-bold text-[#1a0a03] hover:text-[#8b1d24] underline cursor-pointer bg-transparent border-none focus:outline-none transition-colors"
               >
                 Edit Response
               </button>
