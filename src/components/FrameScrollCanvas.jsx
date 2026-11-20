@@ -576,8 +576,8 @@ export default function FrameScrollCanvas({
                 left: '71.2%',
                 top: '70.5%',
                 transform: 'translate(-50%, -50%)',
-                width: '16.5%',
-                maxWidth: '98px',
+                width: '13.5%',
+                maxWidth: '80px',
                 zIndex: 20,
               }}
             >
@@ -607,10 +607,10 @@ export default function FrameScrollCanvas({
                   }}
                 />
 
-                {/* Small 'Click here' text and up arrow at bottom of the button in same font */}
-                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                {/* Small 'Click here' text and static up arrow at bottom of the button in same font */}
+                <div className="mt-0.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-base sm:text-lg md:text-xl font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
+                    className="font-script text-xs sm:text-sm md:text-base font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
                     style={{
                       textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
                     }}
@@ -619,7 +619,7 @@ export default function FrameScrollCanvas({
                   </span>
                   <div className="mt-0.5 flex flex-col items-center">
                     <svg
-                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#3d2514] group-hover:text-[#6b3f1f] animate-bounce transition-colors"
+                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#3d2514] group-hover:text-[#6b3f1f] transition-colors"
                       fill="none"
                       stroke="currentColor"
                       strokeWidth="2.5"
