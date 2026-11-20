@@ -6,11 +6,26 @@ import ScrollInvitationModal from './ScrollInvitationModal';
 const FRAME_237_INDEX = 236; // 0-based index for frame_237.jpg
 const FRAME_240_INDEX = 239; // 0-based index for frame_240.jpg
 
-export default function FrameScrollCanvas({ images }) {
+export default function FrameScrollCanvas({
+  images,
+  isPreloadComplete = true,
+  onScrollStart,
+}) {
   const canvasRef = useRef(null);
 
   // Cached screen & canvas dimensions to eliminate layout thrashing
   const dimensionsRef = useRef({ width: 0, height: 0, dpr: 1 });
+
+  // Preload and onScrollStart refs for listener access without re-binding
+  const isPreloadCompleteRef = useRef(isPreloadComplete);
+  useEffect(() => {
+    isPreloadCompleteRef.current = isPreloadComplete;
+  }, [isPreloadComplete]);
+
+  const onScrollStartRef = useRef(onScrollStart);
+  useEffect(() => {
+    onScrollStartRef.current = onScrollStart;
+  }, [onScrollStart]);
 
   // Smooth lerp scrolling state
   const targetScrollRef = useRef(0);
@@ -171,6 +186,11 @@ export default function FrameScrollCanvas({ images }) {
         currentScrollRef.current = targetScrollRef.current;
       }
 
+      // Notify parent when scrolling advances past initial position
+      if (onScrollStartRef.current && currentScrollRef.current > 0.3) {
+        onScrollStartRef.current();
+      }
+
       const frameToDraw = Math.min(
         FRAME_237_INDEX,
         Math.max(0, Math.round(currentScrollRef.current))
@@ -233,8 +253,13 @@ export default function FrameScrollCanvas({ images }) {
     let lastTouchY = 0;
 
     const handleDelta = (deltaY, isSwipe = false) => {
-      // If scroll modal is open, don't move the background carousel
-      if (isScrollOpenRef.current) return;
+      // If scroll modal is open or preloading is not complete, don't move
+      if (isScrollOpenRef.current || !isPreloadCompleteRef.current) return;
+
+      // Notify parent when forward scroll gesture starts
+      if (onScrollStartRef.current && deltaY > 1.5) {
+        onScrollStartRef.current();
+      }
 
       const now = performance.now();
 
@@ -366,10 +391,16 @@ export default function FrameScrollCanvas({ images }) {
         }}
       >
         {/* Panel 1: Stage Canvas (Frames 1 to 240) */}
-        <div className="relative w-screen h-full overflow-hidden bg-black shrink-0">
+        <div className="relative w-screen h-full overflow-hidden bg-[#060b08] shrink-0">
+          {/* Pristine base frame_01 image underneath canvas to eliminate any canvas initialization blink */}
+          <img
+            src="/madhurem/frame_01.jpg"
+            alt="Wedding Stage"
+            className="absolute inset-0 w-full h-full object-cover object-center select-none pointer-events-none"
+          />
           <canvas
             ref={canvasRef}
-            className="w-full h-full object-cover select-none pointer-events-none"
+            className="relative z-10 w-full h-full object-cover select-none pointer-events-none"
           />
         </div>
 

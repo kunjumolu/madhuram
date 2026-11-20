@@ -8,7 +8,7 @@ export default function App() {
   const [progress, setProgress] = useState({ loaded: 0, total: TOTAL_FRAMES, percent: 0 });
   const [isPreloadComplete, setIsPreloadComplete] = useState(false);
   const [images, setImages] = useState([]);
-  const [hasEntered, setHasEntered] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     // Preload all 240 frames
@@ -20,29 +20,30 @@ export default function App() {
     });
   }, []);
 
-  const handleFinishLoading = () => {
-    window.scrollTo(0, 0);
-    setHasEntered(true);
+  const handleScrollStart = () => {
+    if (!hasScrolled) {
+      setHasScrolled(true);
+    }
   };
 
   return (
     <div className="relative w-full h-full min-h-screen bg-[#060b08] text-[#faf7f2] overflow-hidden select-none">
-      {/* 1. Minimal Loading Page: Only Loading and Percentage */}
-      {!hasEntered && (
-        <LoadingScreen
-          percent={progress.percent}
-          isComplete={isPreloadComplete}
-          onFinish={handleFinishLoading}
-        />
-      )}
+      {/* 1. Permanent Frame Canvas: Zero blink, always active with base frame_01 background */}
+      <FrameScrollCanvas
+        images={images}
+        isPreloadComplete={isPreloadComplete}
+        onScrollStart={handleScrollStart}
+      />
 
-      {/* 2. Only the Landing Page (Stage Frame-by-Frame Scroll) */}
-      {hasEntered && (
-        <>
-          <FrameScrollCanvas images={images} />
-          <AudioPlayer />
-        </>
-      )}
+      {/* 2. Floating Ambient Audio Player */}
+      <AudioPlayer />
+
+      {/* 3. Warm-white loading overlay & 'Scroll up to start exploring' prompt */}
+      <LoadingScreen
+        percent={progress.percent}
+        isComplete={isPreloadComplete}
+        isDismissed={hasScrolled}
+      />
     </div>
   );
 }
