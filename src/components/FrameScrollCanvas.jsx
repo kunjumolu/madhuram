@@ -3,8 +3,8 @@ import { TOTAL_FRAMES } from '../utils/frames';
 import { Sparkles } from 'lucide-react';
 import ScrollInvitationModal from './ScrollInvitationModal';
 
-const FRAME_237_INDEX = 236; // 0-based index for frame_237.jpg
-const FRAME_240_INDEX = 239; // 0-based index for frame_240.jpg
+const FRAME_164_INDEX = 163; // 0-based index for frame_164.jpg (start slow fade-in)
+const FRAME_168_INDEX = 167; // 0-based index for frame_168.jpg (target frame)
 
 export default function FrameScrollCanvas({
   images,
@@ -117,11 +117,11 @@ export default function FrameScrollCanvas({
       // 1. Draw base frame
       renderImageToCtx(ctx, baseImg, width, height, 1, baseAspect);
 
-      // 2. Draw frame_240 if overlayAlpha > 0, aligned with baseAspect
-      if (overlayAlpha > 0.005 && images && images[FRAME_240_INDEX]) {
+      // 2. Draw frame_168 if overlayAlpha > 0, aligned with baseAspect
+      if (overlayAlpha > 0.005 && images && images[FRAME_168_INDEX]) {
         renderImageToCtx(
           ctx,
-          images[FRAME_240_INDEX],
+          images[FRAME_168_INDEX],
           width,
           height,
           Math.min(1, Math.max(0, overlayAlpha)),
@@ -192,7 +192,7 @@ export default function FrameScrollCanvas({
       }
 
       const frameToDraw = Math.min(
-        FRAME_237_INDEX,
+        FRAME_168_INDEX,
         Math.max(0, Math.round(currentScrollRef.current))
       );
 
@@ -201,9 +201,11 @@ export default function FrameScrollCanvas({
         needsDraw = true;
       }
 
-      // 2. Crossfade target for frame 240 based on position
-      if (currentScrollRef.current >= FRAME_237_INDEX - 0.5) {
-        targetAlphaRef.current = 1;
+      // 2. Slowly fade in frame_168 even from frame_164
+      if (currentScrollRef.current >= FRAME_164_INDEX) {
+        const fadeProgress =
+          (currentScrollRef.current - FRAME_164_INDEX) / (FRAME_168_INDEX - FRAME_164_INDEX);
+        targetAlphaRef.current = Math.min(1, Math.max(0, fadeProgress));
       } else {
         targetAlphaRef.current = 0;
       }
@@ -218,7 +220,7 @@ export default function FrameScrollCanvas({
         needsDraw = true;
       }
 
-      // Track initial stay duration for frame 240
+      // Track initial stay duration for frame 168
       if (overlayAlphaRef.current >= 0.98 && !hasStayedRef.current) {
         hasStayedRef.current = true;
         stayUntilRef.current = performance.now() + 1800; // 1.8s gentle stay
@@ -267,21 +269,21 @@ export default function FrameScrollCanvas({
       if (isSecondPageVisibleRef.current) {
         if (deltaY > 0) return; // Keep on second page
 
-        // Scrolling up slides back to frame 240
+        // Scrolling up slides back to frame 168
         if (deltaY < -10 && now - lastToggleTimeRef.current > 350) {
           lastToggleTimeRef.current = now;
           isSecondPageVisibleRef.current = false;
           setIsSecondPageVisible(false);
-          targetScrollRef.current = FRAME_237_INDEX;
-          currentScrollRef.current = FRAME_237_INDEX;
+          targetScrollRef.current = FRAME_168_INDEX;
+          currentScrollRef.current = FRAME_168_INDEX;
           return;
         }
         return;
       }
 
-      // Case 2: On Frame 240 (at FRAME_237_INDEX with overlayAlpha >= 0.8)
+      // Case 2: On Frame 168 (at FRAME_168_INDEX with overlayAlpha >= 0.8)
       const isAtEnd =
-        targetScrollRef.current >= FRAME_237_INDEX - 0.5 && overlayAlphaRef.current >= 0.8;
+        targetScrollRef.current >= FRAME_168_INDEX - 0.5 && overlayAlphaRef.current >= 0.8;
 
       if (isAtEnd) {
         // Scrolling up immediately breaks any stay and scrolls backward seamlessly
@@ -305,13 +307,13 @@ export default function FrameScrollCanvas({
         return;
       }
 
-      // Case 3: Normal Scrubbing between Frame 0 and Frame 237 (Forward & Backward)
+      // Case 3: Normal Scrubbing between Frame 0 and Frame 168 (Forward & Backward)
       const scale = isSwipe ? 0.22 : 0.12;
       const step = deltaY * scale;
 
       targetScrollRef.current = Math.max(
         0,
-        Math.min(FRAME_237_INDEX, targetScrollRef.current + step)
+        Math.min(FRAME_168_INDEX, targetScrollRef.current + step)
       );
     };
 
@@ -347,16 +349,16 @@ export default function FrameScrollCanvas({
       lastTouchX = currentX;
       lastTouchY = currentY;
 
-      // Swiping right on second page slides back to frame 240
+      // Swiping right on second page slides back to frame 168
       if (isSecondPageVisibleRef.current && deltaX < -12 && Math.abs(deltaX) > Math.abs(deltaY)) {
         handleDelta(-30, true);
         return;
       }
 
-      // Swiping left on frame 240 slides to second page
+      // Swiping left on frame 168 slides to second page
       if (
         !isSecondPageVisibleRef.current &&
-        targetScrollRef.current >= FRAME_237_INDEX - 0.5 &&
+        targetScrollRef.current >= FRAME_168_INDEX - 0.5 &&
         deltaX > 12 &&
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
@@ -380,7 +382,7 @@ export default function FrameScrollCanvas({
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden bg-black select-none z-10 touch-none">
-      {/* Synchronized Horizontal Slider Track: Frame 240 and Second Page touching edge-to-edge */}
+      {/* Synchronized Horizontal Slider Track: Frame 168 and Second Page touching edge-to-edge */}
       <div
         className="absolute top-0 left-0 w-[200vw] h-full flex flex-row transition-transform duration-600 ease-out will-change-transform"
         style={{
@@ -390,7 +392,7 @@ export default function FrameScrollCanvas({
           outline: 'none',
         }}
       >
-        {/* Panel 1: Stage Canvas (Frames 1 to 240) */}
+        {/* Panel 1: Stage Canvas (Frames 1 to 169) */}
         <div className="relative w-screen h-full overflow-hidden bg-[#060b08] shrink-0">
           {/* Pristine base frame_01 image underneath canvas to eliminate any canvas initialization blink */}
           <img

@@ -1,11 +1,11 @@
-export const TOTAL_FRAMES = 240;
+export const TOTAL_FRAMES = 169;
 
 /**
- * Returns the URL for a specific frame number (1-based index: 1 to 240)
+ * Returns the URL for a specific frame number (1-based index: 1 to 169)
  * Pattern:
  * 1..9   => /madhurem/frame_01.jpg .. /madhurem/frame_09.jpg
  * 10..99 => /madhurem/frame_10.jpg .. /madhurem/frame_99.jpg
- * 100..240 => /madhurem/frame_100.jpg .. /madhurem/frame_240.jpg
+ * 100..169 => /madhurem/frame_100.jpg .. /madhurem/frame_169.jpg
  */
 export function getFrameUrl(index) {
   const clamped = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(index)));
