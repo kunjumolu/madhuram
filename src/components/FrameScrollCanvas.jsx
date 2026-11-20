@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { TOTAL_FRAMES, MADHUREM_FRAMES } from '../utils/frames';
+import RsvpPaperModal from './RsvpPaperModal';
 
 const FRAME_160_INDEX = 159; // 0-based index for madhurem/frame_160.jpg (start slow fade-in)
 const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhurem/frame_169.jpg
@@ -650,46 +651,11 @@ export default function FrameScrollCanvas({
         </div>
       </div>
 
-      {/* Paper Image Popup Modal */}
-      {isPaperPopupOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 select-none bg-black/25 backdrop-blur-[3px] transition-all duration-300"
-          onClick={() => setIsPaperPopupOpen(false)}
-        >
-          <div
-            className="relative w-[94vw] max-w-[540px] sm:max-w-[600px] md:max-w-[650px] max-h-[92vh] animate-popup-3d flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              type="button"
-              onClick={() => setIsPaperPopupOpen(false)}
-              className="absolute -top-3.5 -right-3.5 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1c1815]/90 text-[#f0b256] border border-[#f0b256]/60 flex items-center justify-center shadow-2xl hover:bg-[#2a241f] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
-              aria-label="Close Invitation Paper"
-            >
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-
-            {/* Paper Image: Increased size with crystal clarity */}
-            <img
-              src="/paper.png"
-              alt="Wedding Invitation Paper"
-              className="w-full h-auto max-h-[90vh] object-contain rounded-lg drop-shadow-[0_20px_45px_rgba(0,0,0,0.75)] select-none pointer-events-none"
-            />
-          </div>
-        </div>
-      )}
+      {/* Paper Image Popup Modal with Handwritten RSVP Form */}
+      <RsvpPaperModal
+        isOpen={isPaperPopupOpen}
+        onClose={() => setIsPaperPopupOpen(false)}
+      />
     </div>
   );
 }
