@@ -35,15 +35,15 @@ export default function App() {
         onScrollStart={handleScrollStart}
       />
 
-      {/* 2. Floating Ambient Audio Player */}
-      <AudioPlayer />
-
-      {/* 3. Warm-white loading overlay & 'Scroll up to start exploring' prompt */}
+      {/* 2. Warm-white loading overlay & 'Scroll up to start exploring' prompt */}
       <LoadingScreen
         percent={progress.percent}
         isComplete={isPreloadComplete}
         isDismissed={hasScrolled}
       />
+
+      {/* 3. Floating Ambient Audio Player with Mute/Unmute toggle */}
+      <AudioPlayer />
     </div>
   );
 }

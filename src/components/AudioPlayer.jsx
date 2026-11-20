@@ -1,116 +1,141 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Volume2, VolumeX, Music } from 'lucide-react';
+import { Volume2, VolumeX } from 'lucide-react';
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const audioCtxRef = useRef(null);
-  const intervalRef = useRef(null);
+  const audioRef = useRef(null);
+  const userInteractedRef = useRef(false);
+  const userManuallyPausedRef = useRef(false);
 
-  // Soft ambient wedding melody synthesizer via Web Audio API
-  const startSynthMelody = () => {
-    try {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioContext();
+  // Smooth fade-in to target volume for a gentle, luxurious audio experience
+  const fadeIn = (audio, targetVol = 0.65, duration = 1200) => {
+    audio.volume = 0;
+    const start = performance.now();
+    const step = (now) => {
+      const elapsed = now - start;
+      const progress = Math.min(1, elapsed / duration);
+      audio.volume = progress * targetVol;
+      if (progress < 1 && !audio.paused) {
+        requestAnimationFrame(step);
       }
-
-      if (audioCtxRef.current.state === 'suspended') {
-        audioCtxRef.current.resume();
-      }
-
-      const ctx = audioCtxRef.current;
-
-      const chords = [
-        [261.63, 329.63, 392.0, 523.25], // C major
-        [220.0, 261.63, 329.63, 440.0],  // A minor
-        [174.61, 220.0, 261.63, 349.23], // F major
-        [196.0, 246.94, 293.66, 392.0],  // G major
-      ];
-
-      let chordIndex = 0;
-
-      const playChordNote = (freq, delayTime) => {
-        setTimeout(() => {
-          if (!audioCtxRef.current || audioCtxRef.current.state === 'closed') return;
-
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-          gain.gain.setValueAtTime(0, ctx.currentTime);
-          gain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.15);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 3.2);
-
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-
-          osc.start();
-          osc.stop(ctx.currentTime + 3.3);
-        }, delayTime);
-      };
-
-      const step = () => {
-        const currentChord = chords[chordIndex % chords.length];
-        chordIndex++;
-
-        currentChord.forEach((note, idx) => {
-          playChordNote(note, idx * 350);
-        });
-      };
-
-      step();
-      intervalRef.current = setInterval(step, 3000);
-    } catch (e) {
-      console.warn('Web Audio not allowed or supported', e);
-    }
+    };
+    requestAnimationFrame(step);
   };
 
-  const stopSynthMelody = () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current);
-      intervalRef.current = null;
-    }
-    if (audioCtxRef.current && audioCtxRef.current.state === 'running') {
-      audioCtxRef.current.suspend();
-    }
+  const playAudio = () => {
+    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    audio
+      .play()
+      .then(() => {
+        setIsPlaying(true);
+        userInteractedRef.current = true;
+        fadeIn(audio, 0.65, 1000);
+      })
+      .catch((err) => {
+        // Autoplay policy prevented playback, awaiting next explicit user gesture
+        console.log('Audio playback waiting for user interaction:', err);
+      });
   };
 
-  const toggleAudio = () => {
+  const pauseAudio = () => {
+    if (!audioRef.current) return;
+    audioRef.current.pause();
+    setIsPlaying(false);
+  };
+
+  const toggleAudio = (e) => {
+    e?.stopPropagation();
     if (isPlaying) {
-      stopSynthMelody();
-      setIsPlaying(false);
+      userManuallyPausedRef.current = true;
+      pauseAudio();
     } else {
-      startSynthMelody();
-      setIsPlaying(true);
+      userManuallyPausedRef.current = false;
+      playAudio();
     }
   };
 
   useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    // Set initial audio properties
+    audio.loop = true;
+
+    // 1. Attempt immediate play (if browser autoplay policy permits it)
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          setIsPlaying(true);
+          userInteractedRef.current = true;
+          fadeIn(audio, 0.65, 1000);
+        })
+        .catch(() => {
+          // Normal browser autoplay restriction: will start on first user interaction
+        });
+    }
+
+    // 2. Start music on first interaction (click, touch, scroll, swipe, keypress)
+    const handleFirstInteraction = () => {
+      if (userInteractedRef.current || userManuallyPausedRef.current) return;
+      playAudio();
+      removeInteractionListeners();
+    };
+
+    const events = ['click', 'touchstart', 'touchend', 'pointerdown', 'wheel', 'keydown'];
+
+    const removeInteractionListeners = () => {
+      events.forEach((event) => {
+        window.removeEventListener(event, handleFirstInteraction, { capture: true });
+        document.removeEventListener(event, handleFirstInteraction, { capture: true });
+      });
+    };
+
+    events.forEach((event) => {
+      window.addEventListener(event, handleFirstInteraction, { capture: true, passive: true });
+      document.addEventListener(event, handleFirstInteraction, { capture: true, passive: true });
+    });
+
     return () => {
-      stopSynthMelody();
-      if (audioCtxRef.current) {
-        audioCtxRef.current.close().catch(() => {});
+      removeInteractionListeners();
+      if (audio) {
+        audio.pause();
       }
     };
   }, []);
 
   return (
-    <div className="fixed bottom-5 right-5 z-40">
+    <div className="fixed bottom-5 right-5 z-45 sm:bottom-6 sm:right-6 pointer-events-auto select-none">
+      {/* Native HTML5 Audio element */}
+      <audio
+        ref={audioRef}
+        src="/music.mp3"
+        loop
+        preload="auto"
+        playsInline
+      />
+
+      {/* Floating Mute/Unmute Luxury Button */}
       <button
+        type="button"
         onClick={toggleAudio}
-        className={`w-10 h-10 rounded-full luxury-glass border flex items-center justify-center transition-all duration-300 shadow-xl ${
+        aria-label={isPlaying ? 'Mute background music' : 'Unmute background music'}
+        title={isPlaying ? 'Mute background music' : 'Play / Unmute background music'}
+        className={`group relative w-11 h-11 sm:w-12 sm:h-12 rounded-full backdrop-blur-md border flex items-center justify-center transition-all duration-300 shadow-2xl cursor-pointer active:scale-95 hover:scale-105 ${
           isPlaying
-            ? 'border-[#d4af37] text-[#fbeea4] shadow-[0_0_15px_rgba(212,175,55,0.35)]'
-            : 'border-white/10 text-[#c9bea7] hover:border-[#d4af37]/40'
+            ? 'bg-[#1c1815]/85 border-[#d4af37] text-[#f0b256] shadow-[0_0_20px_rgba(212,175,55,0.4)]'
+            : 'bg-[#141210]/75 border-white/20 text-[#a89b82] hover:border-[#d4af37]/50 hover:text-[#d4af37]'
         }`}
-        title={isPlaying ? 'Mute music' : 'Play ambient music'}
       >
         {isPlaying ? (
-          <Volume2 className="w-4 h-4 text-[#d4af37] animate-pulse" />
+          <>
+            {/* Subtle animated sound wave pulse aura */}
+            <span className="absolute inset-0 rounded-full border border-[#f0b256]/30 animate-ping opacity-35 pointer-events-none" />
+            <Volume2 className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-[#f0b256] transition-transform group-hover:scale-110" />
+          </>
         ) : (
-          <Music className="w-4 h-4 text-[#a89b82]" />
+          <VolumeX className="w-5 h-5 sm:w-5.5 sm:h-5.5 text-[#a89b82] group-hover:text-[#d4af37] transition-colors" />
         )}
       </button>
     </div>
