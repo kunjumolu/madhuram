@@ -17,7 +17,8 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   width: 100%;
   min-height: 100%;
   background-color: #060b08;
@@ -32,13 +33,16 @@ html, body {
 ::-webkit-scrollbar {
   width: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: #070d09;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #c59f31;
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #e5bd47;
 }
@@ -72,14 +76,12 @@ html, body {
 
 /* Gold Gradient Text & Effects */
 .gold-text-shimmer {
-  background: linear-gradient(
-    120deg,
-    #ffffff 0%,
-    #fbe397 25%,
-    #d4af37 50%,
-    #ffd700 75%,
-    #fbedb2 100%
-  );
+  background: linear-gradient(120deg,
+      #ffffff 0%,
+      #fbe397 25%,
+      #d4af37 50%,
+      #ffd700 75%,
+      #fbedb2 100%);
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -126,10 +128,13 @@ html, body {
 }
 
 @keyframes pulseSubtle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: scale(1);
     opacity: 0.9;
   }
+
   50% {
     transform: scale(1.03);
     opacity: 1;
@@ -137,18 +142,24 @@ html, body {
 }
 
 @keyframes floatElement {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
     transform: translateY(-8px);
   }
 }
 
 @keyframes floatGentle {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px) rotate(0deg);
   }
+
   50% {
     transform: translateY(-5px) rotate(1deg);
   }
@@ -223,14 +234,18 @@ html, body {
     transform: translateX(200%) skewX(-25deg);
     opacity: 0;
   }
+
   3% {
     opacity: 1;
   }
+
   26% {
     transform: translateX(-200%) skewX(-25deg);
     opacity: 1;
   }
-  27%, 100% {
+
+  27%,
+  100% {
     transform: translateX(-200%) skewX(-25deg);
     opacity: 0;
   }
@@ -242,14 +257,12 @@ html, body {
   left: 0;
   width: 50%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.4) 30%,
-    rgba(255, 255, 255, 0.95) 50%,
-    rgba(255, 255, 255, 0.4) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.4) 30%,
+      rgba(255, 255, 255, 0.95) 50%,
+      rgba(255, 255, 255, 0.4) 70%,
+      rgba(255, 255, 255, 0) 100%);
   animation: reflectiveGlanceRightToLeft 2.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
   mix-blend-mode: overlay;
   filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9));
@@ -261,10 +274,12 @@ html, body {
     transform: scaleY(0.08) scaleX(0.92);
     opacity: 0;
   }
+
   60% {
     transform: scaleY(1.02) scaleX(1);
     opacity: 1;
   }
+
   100% {
     transform: scaleY(1) scaleX(1);
     opacity: 1;
@@ -274,4 +289,29 @@ html, body {
 .animate-scroll-unroll {
   transform-origin: center center;
   animation: scrollUnroll 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3D Ground Perspective for Text on Grass */
+.grass-perspective {
+  transform: perspective(650px) rotateX(46deg) rotateZ(-15deg) skewX(-3deg);
+  transform-origin: center center;
+}
+
+/* Subtle Glowing Shimmer for Grass Loading Text */
+@keyframes grassTextGlow {
+
+  0%,
+  100% {
+    filter: drop-shadow(0 0 8px rgb(0, 0, 0)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
+    opacity: 0.94;
+  }
+
+  50% {
+    filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.963)) drop-shadow(0 0 28px rgb(13, 13, 13)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
+    opacity: 1;
+  }
+}
+
+.animate-grass-glow {
+  animation: grassTextGlow 2.8s ease-in-out infinite;
 }
