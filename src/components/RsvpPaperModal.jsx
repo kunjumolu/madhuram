@@ -69,7 +69,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
 
         {/* RSVP Handwritten Form Container placed directly in the middle of the parchment paper */}
         <div
-          className="absolute left-0 right-0 top-[20%] bottom-[12%] flex flex-col justify-center pointer-events-auto overflow-y-auto overflow-x-hidden"
+          className="absolute left-0 right-0 top-[18%] bottom-[10%] flex flex-col justify-center pointer-events-auto overflow-y-auto overflow-x-hidden"
           style={{
             paddingLeft: '21%',
             paddingRight: '10%',
@@ -80,10 +80,10 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
           {!isSubmitted ? (
             <form onSubmit={handleSubmit} className="w-full flex flex-col justify-center">
               {/* Form Input Fields: Centered in paper, shifted right to avoid rose/vines, high contrast dark text */}
-              <div className="flex flex-col gap-2.5 sm:gap-3">
+              <div className="flex flex-col gap-3.5 sm:gap-4.5">
                 {/* 1. Name Field */}
-                <div className="flex flex-col">
-                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-normal tracking-wide">
                     Your Name
                   </label>
                   <input
@@ -92,7 +92,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="Write your name here..."
-                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-0.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 sm:py-1.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -100,15 +100,15 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                 </div>
 
                 {/* 2. Attendance Selection (I will be coming / I won't be able to make it) */}
-                <div className="flex flex-col">
-                  <span className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight mb-1.5">
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <span className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-normal tracking-wide mb-0.5">
                     Will you attend?
                   </span>
                   <div className="flex flex-col gap-2 sm:gap-2.5">
                     {/* Option 1: I will be coming (Default) */}
                     <div
                       onClick={() => setAttending('yes')}
-                      className="flex items-center gap-2.5 cursor-pointer group select-none py-0.5"
+                      className="flex items-center gap-2.5 cursor-pointer group select-none py-1"
                     >
                       <span
                         className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-[#1a0a03] flex items-center justify-center transition-all ${attending === 'yes' ? 'bg-[#1a0a03]' : 'bg-transparent'
@@ -120,8 +120,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       </span>
                       <span
                         className={`font-serif-luxury italic text-base sm:text-lg md:text-xl transition-colors ${attending === 'yes'
-                          ? 'text-[#1a0a03] font-bold'
-                          : 'text-[#3e2415] opacity-85 font-medium'
+                            ? 'text-[#1a0a03] font-bold'
+                            : 'text-[#3e2415] opacity-85 font-medium'
                           }`}
                       >
                         I will be coming
@@ -131,7 +131,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     {/* Option 2: I won't be able to make it */}
                     <div
                       onClick={() => setAttending('no')}
-                      className="flex items-center gap-2.5 cursor-pointer group select-none py-0.5"
+                      className="flex items-center gap-2.5 cursor-pointer group select-none py-1"
                     >
                       <span
                         className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-[#1a0a03] flex items-center justify-center transition-all ${attending === 'no' ? 'bg-[#1a0a03]' : 'bg-transparent'
@@ -143,8 +143,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       </span>
                       <span
                         className={`font-serif-luxury italic text-base sm:text-lg md:text-xl transition-colors ${attending === 'no'
-                          ? 'text-[#1a0a03] font-bold'
-                          : 'text-[#3e2415] opacity-85 font-medium'
+                            ? 'text-[#1a0a03] font-bold'
+                            : 'text-[#3e2415] opacity-85 font-medium'
                           }`}
                       >
                         I won't be able to make it
@@ -155,8 +155,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
 
                 {/* 3. Number of Guests (Only visible if 'I will be coming' is selected) */}
                 {attending === 'yes' && (
-                  <div className="flex flex-col transition-all duration-300">
-                    <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
+                  <div className="flex flex-col gap-1 sm:gap-1.5 transition-all duration-300">
+                    <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-normal tracking-wide">
                       Number of Guests
                     </label>
                     <input
@@ -167,7 +167,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       value={guestCount}
                       onChange={(e) => setGuestCount(e.target.value)}
                       placeholder="1"
-                      className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-0.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
+                      className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-bold text-lg sm:text-xl md:text-2xl py-1 sm:py-1.5 px-0.5 focus:outline-none placeholder:text-[#4a2c17]/75 transition-colors"
                       style={{
                         boxShadow: 'none',
                       }}
@@ -176,8 +176,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                 )}
 
                 {/* 4. Wishes or Messages (Optional) */}
-                <div className="flex flex-col">
-                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-tight">
+                <div className="flex flex-col gap-1 sm:gap-1.5">
+                  <label className="font-script text-2xl sm:text-3xl md:text-4xl font-bold text-[#1a0a03] leading-normal tracking-wide">
                     Wishes or Messages{' '}
                     <span className="font-serif-luxury italic text-sm sm:text-base opacity-75 font-normal">
                       (Optional)
@@ -188,7 +188,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                     value={wishes}
                     onChange={(e) => setWishes(e.target.value)}
                     placeholder="Leave your blessings and warm words..."
-                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-semibold text-base sm:text-lg md:text-xl py-0.5 px-0.5 focus:outline-none resize-none placeholder:text-[#4a2c17]/75 transition-colors"
+                    className="w-full bg-transparent border-none border-b-2 border-[#2a1206] focus:border-[#1a0a03] text-[#150802] font-serif-luxury italic font-semibold text-base sm:text-lg md:text-xl py-1 sm:py-1.5 px-0.5 focus:outline-none resize-none leading-relaxed placeholder:text-[#4a2c17]/75 transition-colors"
                     style={{
                       boxShadow: 'none',
                     }}
@@ -197,7 +197,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
               </div>
 
               {/* Submit RSVP Button: positioned snuggly upwards right below the last text field */}
-              <div className="flex justify-center pt-1.5 sm:pt-2">
+              <div className="flex justify-center pt-2.5 sm:pt-3">
                 <button
                   type="submit"
                   className="group cursor-pointer bg-transparent border-none p-0 focus:outline-none flex flex-col items-center transition-transform duration-200 hover:scale-105 active:scale-95"

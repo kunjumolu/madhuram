@@ -74,10 +74,15 @@ export default function FrameScrollCanvas({
   const slideCooldownUntilRef = useRef(0);
   const touchGestureStartedOnBoardRef = useRef(false);
 
-  // Board zoom state (zooms directly in to RSVP button on scroll)
-  const targetBoardZoomRef = useRef(1);
-  const currentBoardZoomRef = useRef(1);
+  // Board multi-phase scroll state:
+  // Phase 1 (0.0 -> 1.0): Zoom in towards RSVP button (1.0 -> 2.4)
+  // Phase 2 (1.0 -> 2.0): Zoom back out to normal size (2.4 -> 1.0)
+  // Phase 3 (2.0 -> 3.0): At normal size, slowly fade in thankscard.png replacing board
+  const targetBoardProgressRef = useRef(0);
+  const currentBoardProgressRef = useRef(0);
   const boardWrapperRef = useRef(null);
+  const thanksCardRef = useRef(null);
+  const rsvpButtonWrapperRef = useRef(null);
 
   // Responsive Board Layout Rect
   const [boardLayout, setBoardLayout] = useState(() => {
@@ -96,7 +101,7 @@ export default function FrameScrollCanvas({
 
   const rAFRef = useRef(null);
 
-  // Preload board, rsvp button, and paper images in memory
+  // Preload board, rsvp button, paper, and thankscard images in memory
   useEffect(() => {
     const img1 = new Image();
     img1.src = '/board.png';
@@ -104,6 +109,8 @@ export default function FrameScrollCanvas({
     img2.src = '/rsvp button.png';
     const img3 = new Image();
     img3.src = '/paper.png';
+    const img4 = new Image();
+    img4.src = '/thankscard.png';
   }, []);
 
   // High-performance image render helper with cover fitting
@@ -308,27 +315,58 @@ export default function FrameScrollCanvas({
         stayUntilRef.current = 0;
       }
 
-      // 5. Smooth hardware-accelerated zoom interpolation on the board page
+      // 5. Smooth hardware-accelerated zoom and thankscard fade on the board page
       const now = performance.now();
       if (now < slideCooldownUntilRef.current) {
-        // Enforce scale(1) during slide cooldown to eliminate any autozoom jump
-        targetBoardZoomRef.current = 1.0;
-        currentBoardZoomRef.current = 1.0;
+        // Enforce initial scale(1) and zero thanksCard opacity during slide cooldown
+        targetBoardProgressRef.current = 0.0;
+        currentBoardProgressRef.current = 0.0;
         if (boardWrapperRef.current) {
           boardWrapperRef.current.style.transform = 'scale(1)';
         }
+        if (thanksCardRef.current) {
+          thanksCardRef.current.style.opacity = '0';
+        }
+        if (rsvpButtonWrapperRef.current) {
+          rsvpButtonWrapperRef.current.style.opacity = '1';
+          rsvpButtonWrapperRef.current.style.pointerEvents = 'auto';
+        }
       } else {
-        const zoomDiff = targetBoardZoomRef.current - currentBoardZoomRef.current;
-        if (Math.abs(zoomDiff) > 0.001) {
-          currentBoardZoomRef.current += zoomDiff * 0.22;
-          if (boardWrapperRef.current) {
-            boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
-          }
-        } else if (currentBoardZoomRef.current !== targetBoardZoomRef.current) {
-          currentBoardZoomRef.current = targetBoardZoomRef.current;
-          if (boardWrapperRef.current) {
-            boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
-          }
+        const progressDiff = targetBoardProgressRef.current - currentBoardProgressRef.current;
+        if (Math.abs(progressDiff) > 0.001) {
+          currentBoardProgressRef.current += progressDiff * 0.22;
+        } else if (currentBoardProgressRef.current !== targetBoardProgressRef.current) {
+          currentBoardProgressRef.current = targetBoardProgressRef.current;
+        }
+
+        const progress = currentBoardProgressRef.current;
+        let zoom = 1.0;
+        let thanksAlpha = 0.0;
+
+        if (progress <= 1.0) {
+          // Phase 1: Zoom in towards RSVP button (1.0 -> 2.4)
+          zoom = 1.0 + progress * 1.4;
+          thanksAlpha = 0.0;
+        } else if (progress <= 2.0) {
+          // Phase 2: Zoom back out towards normal size (2.4 -> 1.0)
+          const p = progress - 1.0;
+          zoom = 2.4 - p * 1.4;
+          thanksAlpha = 0.0;
+        } else {
+          // Phase 3: At normal size (1.0), slowly fade in thankscard.png (0.0 -> 1.0)
+          zoom = 1.0;
+          thanksAlpha = Math.min(1.0, Math.max(0.0, progress - 2.0));
+        }
+
+        if (boardWrapperRef.current) {
+          boardWrapperRef.current.style.transform = `scale(${zoom})`;
+        }
+        if (thanksCardRef.current) {
+          thanksCardRef.current.style.opacity = String(thanksAlpha);
+        }
+        if (rsvpButtonWrapperRef.current) {
+          rsvpButtonWrapperRef.current.style.opacity = String(Math.max(0, 1 - thanksAlpha * 2.2));
+          rsvpButtonWrapperRef.current.style.pointerEvents = thanksAlpha > 0.05 ? 'none' : 'auto';
         }
       }
 
@@ -372,38 +410,44 @@ export default function FrameScrollCanvas({
         // If paper popup is currently open, do not zoom or navigate
         if (isPaperPopupOpenRef.current) return;
 
-        // Prevent auto-zoom from residual inertia or gestures right after sliding into view
+        // Prevent action from residual inertia or gestures right after sliding into view
         if (now < slideCooldownUntilRef.current) return;
 
         // For touch swipe, require that the touch gesture originated on the board page
         if (isSwipe && !touchGestureStartedOnBoardRef.current) return;
 
-        // Scrolling down (deltaY > 0): zoom in directly towards the RSVP button
+        // Scrolling down (deltaY > 0): advance multi-phase progress forward towards 3.0
         if (deltaY > 0) {
-          const zoomStep = deltaY * (isSwipe ? 0.0028 : 0.0016);
-          targetBoardZoomRef.current = Math.min(2.4, targetBoardZoomRef.current + zoomStep);
+          const step = deltaY * (isSwipe ? 0.0028 : 0.0016);
+          targetBoardProgressRef.current = Math.min(3.0, targetBoardProgressRef.current + step);
           return;
         }
 
-        // Scrolling up (deltaY < 0):
+        // Scrolling up (deltaY < 0): reverse progress backwards
         if (deltaY < 0) {
-          // If currently zoomed in, zoom out first towards 1.0
-          if (targetBoardZoomRef.current > 1.02) {
-            const zoomStep = Math.abs(deltaY) * (isSwipe ? 0.0028 : 0.0016);
-            targetBoardZoomRef.current = Math.max(1.0, targetBoardZoomRef.current - zoomStep);
+          if (targetBoardProgressRef.current > 0.02) {
+            const step = Math.abs(deltaY) * (isSwipe ? 0.0028 : 0.0016);
+            targetBoardProgressRef.current = Math.max(0.0, targetBoardProgressRef.current - step);
             return;
           }
 
-          // If at minimum zoom (1.0), scrolling up slides back to final canvas frame
+          // If at minimum progress (0.0), scrolling up slides back to final canvas frame
           if (deltaY < -10 && now - lastToggleTimeRef.current > 400) {
             lastToggleTimeRef.current = now;
             slideCooldownUntilRef.current = now + 900;
             isSecondPageVisibleRef.current = false;
             setIsSecondPageVisible(false);
-            targetBoardZoomRef.current = 1.0;
-            currentBoardZoomRef.current = 1.0;
+            targetBoardProgressRef.current = 0.0;
+            currentBoardProgressRef.current = 0.0;
             if (boardWrapperRef.current) {
               boardWrapperRef.current.style.transform = 'scale(1)';
+            }
+            if (thanksCardRef.current) {
+              thanksCardRef.current.style.opacity = '0';
+            }
+            if (rsvpButtonWrapperRef.current) {
+              rsvpButtonWrapperRef.current.style.opacity = '1';
+              rsvpButtonWrapperRef.current.style.pointerEvents = 'auto';
             }
             targetScrollRef.current = FINAL_FRAME_INDEX;
             currentScrollRef.current = FINAL_FRAME_INDEX;
@@ -435,10 +479,17 @@ export default function FrameScrollCanvas({
           slideCooldownUntilRef.current = now + 900; // Protection against autozoom
           isSecondPageVisibleRef.current = true;
           setIsSecondPageVisible(true);
-          targetBoardZoomRef.current = 1.0;
-          currentBoardZoomRef.current = 1.0;
+          targetBoardProgressRef.current = 0.0;
+          currentBoardProgressRef.current = 0.0;
           if (boardWrapperRef.current) {
             boardWrapperRef.current.style.transform = 'scale(1)';
+          }
+          if (thanksCardRef.current) {
+            thanksCardRef.current.style.opacity = '0';
+          }
+          if (rsvpButtonWrapperRef.current) {
+            rsvpButtonWrapperRef.current.style.opacity = '1';
+            rsvpButtonWrapperRef.current.style.pointerEvents = 'auto';
           }
           return;
         }
@@ -483,14 +534,14 @@ export default function FrameScrollCanvas({
       lastTouchX = currentX;
       lastTouchY = currentY;
 
-      // Swiping right on board page (if zoomed out) slides back to final frame
+      // Swiping right on board page (if at beginning of progress) slides back to final frame
       if (
         isSecondPageVisibleRef.current &&
         !isPaperPopupOpenRef.current &&
         deltaX < -15 &&
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
-        if (targetBoardZoomRef.current <= 1.05) {
+        if (targetBoardProgressRef.current <= 0.05) {
           handleDelta(-30, true);
           return;
         }
@@ -596,8 +647,27 @@ export default function FrameScrollCanvas({
               }}
             />
 
-            {/* RSVP Button: Fixed in the blank arch space under the text, zooms in place */}
+            {/* Thank You Card Overlay with pristine rendering, slowly fades in and replaces board on scroll */}
+            <img
+              ref={thanksCardRef}
+              src="/thankscard.png"
+              alt="Thank You Card"
+              decoding="sync"
+              fetchpriority="high"
+              className="absolute inset-0 w-full h-full block object-cover select-none pointer-events-none"
+              style={{
+                opacity: 0,
+                border: 'none',
+                boxShadow: 'none',
+                outline: 'none',
+                imageRendering: '-webkit-optimize-contrast',
+                zIndex: 25,
+              }}
+            />
+
+            {/* RSVP Button: Fixed in the blank arch space under the text, zooms in place, fades out when thankscard fades in */}
             <div
+              ref={rsvpButtonWrapperRef}
               className="absolute flex flex-col items-center select-none"
               style={{
                 left: '71.2%',
