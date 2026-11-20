@@ -570,13 +570,8 @@ export default function FrameScrollCanvas({
             />
 
             {/* RSVP Button: Fixed in the blank arch space under the text, zooms in place */}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsPaperPopupOpen(true);
-              }}
-              className="absolute group focus:outline-none cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95"
+            <div
+              className="absolute flex flex-col items-center select-none"
               style={{
                 left: '71.2%',
                 top: '70.5%',
@@ -584,24 +579,58 @@ export default function FrameScrollCanvas({
                 width: '16.5%',
                 maxWidth: '98px',
                 zIndex: 20,
-                background: 'transparent',
-                border: 'none',
-                padding: 0,
-                boxShadow: 'none',
-                outline: 'none',
               }}
-              aria-label="RSVP - Mark your presence"
             >
-              <img
-                src="/rsvp button.png"
-                alt="RSVP Button"
-                className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-200"
-                style={{
-                  filter: 'none',
-                  boxShadow: 'none',
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsPaperPopupOpen(true);
                 }}
-              />
-            </button>
+                className="w-full group focus:outline-none cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95 flex flex-col items-center"
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  padding: 0,
+                  boxShadow: 'none',
+                  outline: 'none',
+                }}
+                aria-label="RSVP - Mark your presence"
+              >
+                <img
+                  src="/rsvp button.png"
+                  alt="RSVP Button"
+                  className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-200"
+                  style={{
+                    filter: 'none',
+                    boxShadow: 'none',
+                  }}
+                />
+
+                {/* Small 'Click here' text and up arrow at bottom of the button in same font */}
+                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                  <span
+                    className="font-script text-base sm:text-lg md:text-xl font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
+                    style={{
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+                    }}
+                  >
+                    Click here
+                  </span>
+                  <div className="mt-0.5 flex flex-col items-center">
+                    <svg
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#3d2514] group-hover:text-[#6b3f1f] animate-bounce transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
         </div>
       </div>
