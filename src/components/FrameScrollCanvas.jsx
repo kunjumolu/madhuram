@@ -53,10 +53,12 @@ export default function FrameScrollCanvas({
 
   const rAFRef = useRef(null);
 
-  // Preload second.png in memory
+  // Preload second.png and popup.png in memory
   useEffect(() => {
-    const img = new Image();
-    img.src = '/second.png';
+    const img1 = new Image();
+    img1.src = '/second.png';
+    const img2 = new Image();
+    img2.src = '/popup.png';
   }, []);
 
   // High-performance image render helper with cover fitting

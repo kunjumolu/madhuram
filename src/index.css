@@ -297,21 +297,41 @@ body {
   transform-origin: center center;
 }
 
-/* Subtle Glowing Shimmer for Grass Loading Text */
-@keyframes grassTextGlow {
-
-  0%,
-  100% {
-    filter: drop-shadow(0 0 8px rgb(0, 0, 0)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
-    opacity: 0.94;
+/* 3D Popup Open & Close Animations */
+@keyframes popup3DOpen {
+  0% {
+    transform: perspective(1200px) rotateX(22deg) rotateY(-8deg) scale(0.68) translateZ(-60px);
+    opacity: 0;
   }
-
-  50% {
-    filter: drop-shadow(0 0 16px rgba(0, 0, 0, 0.963)) drop-shadow(0 0 28px rgb(13, 13, 13)) drop-shadow(0 3px 6px rgba(0, 0, 0, 0.9));
+  65% {
+    transform: perspective(1200px) rotateX(-2deg) rotateY(1deg) scale(1.02) translateZ(8px);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0);
     opacity: 1;
   }
 }
 
-.animate-grass-glow {
-  animation: grassTextGlow 2.8s ease-in-out infinite;
+@keyframes popup3DClose {
+  0% {
+    transform: perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1) translateZ(0);
+    opacity: 1;
+  }
+  100% {
+    transform: perspective(1200px) rotateX(-20deg) rotateY(6deg) scale(0.72) translateZ(-50px);
+    opacity: 0;
+  }
+}
+
+.animate-3d-open {
+  animation: popup3DOpen 0.42s cubic-bezier(0.2, 0.9, 0.3, 1.15) forwards;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+
+.animate-3d-close {
+  animation: popup3DClose 0.32s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
 }
