@@ -544,13 +544,14 @@ export default function FrameScrollCanvas({
           {/* Responsive Board Wrapper anchored with exact object-cover dimensions */}
           <div
             ref={boardWrapperRef}
-            className="relative select-none will-change-transform origin-[65.7%_68.2%]"
+            className="relative select-none will-change-transform origin-[68.5%_68.2%]"
             style={{
               position: 'absolute',
               width: `${boardLayout.width}px`,
               height: `${boardLayout.height}px`,
               left: `${boardLayout.left}px`,
               top: `${boardLayout.top}px`,
+              transformOrigin: '68.5% 68.2%',
               transform: 'scale(1)',
               transition: 'none',
             }}
@@ -576,11 +577,11 @@ export default function FrameScrollCanvas({
               }}
               className="absolute group focus:outline-none cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95"
               style={{
-                left: '65.7%',
+                left: '68.5%',
                 top: '68.2%',
                 transform: 'translate(-50%, -50%)',
-                width: '33%',
-                maxWidth: '210px',
+                width: '25%',
+                maxWidth: '160px',
                 zIndex: 20,
                 background: 'transparent',
                 border: 'none',
