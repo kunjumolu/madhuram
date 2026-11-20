@@ -6,6 +6,34 @@ const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhur
 const DETAILS_START_INDEX = MADHUREM_FRAMES; // 169: 0-based index for details/frame_01.jpg
 const FINAL_FRAME_INDEX = TOTAL_FRAMES - 1; // 408: 0-based index for details/frame_240.jpg
 
+// Compute exact object-cover layout rectangle for board.png (aspect 941 / 1672)
+function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 1672) {
+  if (!containerWidth || !containerHeight) {
+    return { width: 0, height: 0, left: 0, top: 0 };
+  }
+  const screenAspect = containerWidth / containerHeight;
+  let w, h, left, top;
+  if (screenAspect > imageAspect) {
+    // Desktop / widescreen
+    w = containerWidth;
+    h = containerWidth / imageAspect;
+    left = 0;
+    top = (containerHeight - h) / 2;
+  } else {
+    // Mobile / portrait
+    h = containerHeight;
+    w = containerHeight * imageAspect;
+    left = (containerWidth - w) / 2;
+    top = 0;
+  }
+  return {
+    width: Math.round(w),
+    height: Math.round(h),
+    left: Math.round(left),
+    top: Math.round(top),
+  };
+}
+
 export default function FrameScrollCanvas({
   images,
   isPreloadComplete = true,
@@ -38,17 +66,41 @@ export default function FrameScrollCanvas({
   const stayUntilRef = useRef(0);
   const hasStayedRef = useRef(false);
 
-  // Second page state (fullscreen second.png image)
+  // Board Page state (Panel 2 with board.png)
   const [isSecondPageVisible, setIsSecondPageVisible] = useState(false);
   const isSecondPageVisibleRef = useRef(false);
   const lastToggleTimeRef = useRef(0);
 
+  // Board zoom state (zooms directly in to RSVP button on scroll)
+  const targetBoardZoomRef = useRef(1);
+  const currentBoardZoomRef = useRef(1);
+  const boardWrapperRef = useRef(null);
+
+  // Responsive Board Layout Rect
+  const [boardLayout, setBoardLayout] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return getCoverLayout(window.innerWidth, window.innerHeight);
+    }
+    return { width: 0, height: 0, left: 0, top: 0 };
+  });
+
+  // Paper popup modal state
+  const [isPaperPopupOpen, setIsPaperPopupOpen] = useState(false);
+  const isPaperPopupOpenRef = useRef(false);
+  useEffect(() => {
+    isPaperPopupOpenRef.current = isPaperPopupOpen;
+  }, [isPaperPopupOpen]);
+
   const rAFRef = useRef(null);
 
-  // Preload second.png in memory
+  // Preload board, rsvp button, and paper images in memory
   useEffect(() => {
-    const img = new Image();
-    img.src = '/second.png';
+    const img1 = new Image();
+    img1.src = '/board.png';
+    const img2 = new Image();
+    img2.src = '/rsvp button.png';
+    const img3 = new Image();
+    img3.src = '/paper.png';
   }, []);
 
   // High-performance image render helper with cover fitting
@@ -148,6 +200,7 @@ export default function FrameScrollCanvas({
     const height = window.innerHeight;
 
     dimensionsRef.current = { width, height, dpr };
+    setBoardLayout(getCoverLayout(width, height));
 
     const targetW = Math.round(width * dpr);
     const targetH = Math.round(height * dpr);
@@ -183,7 +236,7 @@ export default function FrameScrollCanvas({
     }
   }, [images, drawFrame]);
 
-  // Unified 60fps/120fps animation loop with faster, responsive momentum lerp
+  // Unified 60fps/120fps animation loop with momentum lerp and smooth board zoom
   useEffect(() => {
     let active = true;
 
@@ -251,7 +304,21 @@ export default function FrameScrollCanvas({
         stayUntilRef.current = 0;
       }
 
-      // 5. Redraw canvas only when required
+      // 5. Smooth hardware-accelerated zoom interpolation on the board page
+      const zoomDiff = targetBoardZoomRef.current - currentBoardZoomRef.current;
+      if (Math.abs(zoomDiff) > 0.001) {
+        currentBoardZoomRef.current += zoomDiff * 0.22;
+        if (boardWrapperRef.current) {
+          boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+        }
+      } else if (currentBoardZoomRef.current !== targetBoardZoomRef.current) {
+        currentBoardZoomRef.current = targetBoardZoomRef.current;
+        if (boardWrapperRef.current) {
+          boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+        }
+      }
+
+      // 6. Redraw canvas only when required
       if (needsDraw) {
         drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
       }
@@ -286,17 +353,41 @@ export default function FrameScrollCanvas({
 
       const now = performance.now();
 
-      // Case 1: Currently on the Second Page
+      // Case 1: Currently on the Board Page (Second Page)
       if (isSecondPageVisibleRef.current) {
-        if (deltaY > 0) return; // Keep on second page
+        // If paper popup is currently open, do not zoom or navigate
+        if (isPaperPopupOpenRef.current) return;
 
-        // Scrolling up slides back to final frame of details
-        if (deltaY < -10 && now - lastToggleTimeRef.current > 350) {
-          lastToggleTimeRef.current = now;
-          isSecondPageVisibleRef.current = false;
-          setIsSecondPageVisible(false);
-          targetScrollRef.current = FINAL_FRAME_INDEX;
-          currentScrollRef.current = FINAL_FRAME_INDEX;
+        // Scrolling down (deltaY > 0): zoom in directly towards the RSVP button
+        if (deltaY > 0) {
+          const zoomStep = deltaY * (isSwipe ? 0.0032 : 0.0018);
+          targetBoardZoomRef.current = Math.min(2.4, targetBoardZoomRef.current + zoomStep);
+          return;
+        }
+
+        // Scrolling up (deltaY < 0):
+        if (deltaY < 0) {
+          // If currently zoomed in, zoom out first towards 1.0
+          if (targetBoardZoomRef.current > 1.02) {
+            const zoomStep = Math.abs(deltaY) * (isSwipe ? 0.0032 : 0.0018);
+            targetBoardZoomRef.current = Math.max(1.0, targetBoardZoomRef.current - zoomStep);
+            return;
+          }
+
+          // If at minimum zoom (1.0), scrolling up slides back to final canvas frame
+          if (deltaY < -10 && now - lastToggleTimeRef.current > 350) {
+            lastToggleTimeRef.current = now;
+            isSecondPageVisibleRef.current = false;
+            setIsSecondPageVisible(false);
+            targetBoardZoomRef.current = 1.0;
+            currentBoardZoomRef.current = 1.0;
+            if (boardWrapperRef.current) {
+              boardWrapperRef.current.style.transform = 'scale(1)';
+            }
+            targetScrollRef.current = FINAL_FRAME_INDEX;
+            currentScrollRef.current = FINAL_FRAME_INDEX;
+            return;
+          }
           return;
         }
         return;
@@ -322,13 +413,17 @@ export default function FrameScrollCanvas({
           lastToggleTimeRef.current = now;
           isSecondPageVisibleRef.current = true;
           setIsSecondPageVisible(true);
+          targetBoardZoomRef.current = 1.0;
+          currentBoardZoomRef.current = 1.0;
+          if (boardWrapperRef.current) {
+            boardWrapperRef.current.style.transform = 'scale(1)';
+          }
           return;
         }
         return;
       }
 
       // Case 3: Normal Scrubbing between Frame 0 and FINAL_FRAME_INDEX (Forward & Backward)
-      // Faster, responsive scrubbing speed as requested ("little more fast")
       const scale = isSwipe ? 0.35 : 0.22;
       const step = deltaY * scale;
 
@@ -365,13 +460,20 @@ export default function FrameScrollCanvas({
       lastTouchX = currentX;
       lastTouchY = currentY;
 
-      // Swiping right on second page slides back to final frame
-      if (isSecondPageVisibleRef.current && deltaX < -12 && Math.abs(deltaX) > Math.abs(deltaY)) {
-        handleDelta(-30, true);
-        return;
+      // Swiping right on board page (if zoomed out) slides back to final frame
+      if (
+        isSecondPageVisibleRef.current &&
+        !isPaperPopupOpenRef.current &&
+        deltaX < -15 &&
+        Math.abs(deltaX) > Math.abs(deltaY)
+      ) {
+        if (targetBoardZoomRef.current <= 1.05) {
+          handleDelta(-30, true);
+          return;
+        }
       }
 
-      // Swiping left on final frame slides to second page
+      // Swiping left on final frame slides to board page
       if (
         !isSecondPageVisibleRef.current &&
         targetScrollRef.current >= FINAL_FRAME_INDEX - 0.5 &&
@@ -385,20 +487,28 @@ export default function FrameScrollCanvas({
       handleDelta(deltaY, true);
     };
 
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isPaperPopupOpenRef.current) {
+        setIsPaperPopupOpen(false);
+      }
+    };
+
     window.addEventListener('wheel', handleWheel, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       window.removeEventListener('wheel', handleWheel);
       window.removeEventListener('touchstart', handleTouchStart);
       window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
 
   return (
     <div className="fixed inset-0 w-full h-full overflow-hidden bg-black select-none z-10 touch-none">
-      {/* Synchronized Horizontal Slider Track: Canvas Stage and Second Page touching edge-to-edge */}
+      {/* Synchronized Horizontal Slider Track: Canvas Stage and Board Page touching edge-to-edge */}
       <div
         className="absolute top-0 left-0 w-[200vw] h-full flex flex-row transition-transform duration-600 ease-out will-change-transform"
         style={{
@@ -422,7 +532,7 @@ export default function FrameScrollCanvas({
           />
         </div>
 
-        {/* Panel 2: Second Page Fullscreen Image touching Panel 1 on the right */}
+        {/* Panel 2: Board Page touching Panel 1 on the right */}
         <div
           className="relative w-screen h-full overflow-hidden bg-[#060b08] shrink-0 select-none flex items-center justify-center"
           style={{
@@ -431,18 +541,103 @@ export default function FrameScrollCanvas({
             outline: 'none',
           }}
         >
-          <img
-            src="/second.png"
-            alt="Wedding Invitation Details"
-            className="w-full h-full object-cover object-center select-none pointer-events-none"
+          {/* Responsive Board Wrapper anchored with exact object-cover dimensions */}
+          <div
+            ref={boardWrapperRef}
+            className="relative select-none will-change-transform origin-[65.7%_68.2%]"
             style={{
-              border: 'none',
-              boxShadow: 'none',
-              outline: 'none',
+              position: 'absolute',
+              width: `${boardLayout.width}px`,
+              height: `${boardLayout.height}px`,
+              left: `${boardLayout.left}px`,
+              top: `${boardLayout.top}px`,
+              transform: 'scale(1)',
+              transition: 'none',
             }}
-          />
+          >
+            {/* Board Background Image */}
+            <img
+              src="/board.png"
+              alt="Celebration Board"
+              className="w-full h-full block object-cover select-none pointer-events-none"
+              style={{
+                border: 'none',
+                boxShadow: 'none',
+                outline: 'none',
+              }}
+            />
+
+            {/* RSVP Button: Fixed in the blank arch space under the text, zooms in place */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsPaperPopupOpen(true);
+              }}
+              className="absolute group focus:outline-none cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95"
+              style={{
+                left: '65.7%',
+                top: '68.2%',
+                transform: 'translate(-50%, -50%)',
+                width: '33%',
+                maxWidth: '210px',
+                zIndex: 20,
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+              }}
+              aria-label="RSVP - Mark your presence"
+            >
+              <img
+                src="/rsvp button.png"
+                alt="RSVP Button"
+                className="w-full h-auto object-contain select-none pointer-events-none drop-shadow-[0_8px_20px_rgba(0,0,0,0.5)] group-hover:drop-shadow-[0_12px_28px_rgba(240,178,86,0.45)] transition-all duration-300"
+              />
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Paper Image Popup Modal */}
+      {isPaperPopupOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 select-none bg-black/25 backdrop-blur-[3px] transition-all duration-300"
+          onClick={() => setIsPaperPopupOpen(false)}
+        >
+          <div
+            className="relative max-w-[85vw] max-h-[82vh] sm:max-w-[420px] md:max-w-[460px] animate-popup-3d flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              type="button"
+              onClick={() => setIsPaperPopupOpen(false)}
+              className="absolute -top-3 -right-3 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1c1815]/90 text-[#f0b256] border border-[#f0b256]/60 flex items-center justify-center shadow-2xl hover:bg-[#2a241f] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+              aria-label="Close Invitation Paper"
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Paper Image: Medium size, leaving ~25% of background visible around it */}
+            <img
+              src="/paper.png"
+              alt="Wedding Invitation Paper"
+              className="w-full h-auto max-h-[82vh] object-contain rounded-lg drop-shadow-[0_20px_45px_rgba(0,0,0,0.75)] select-none pointer-events-none"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
