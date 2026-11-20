@@ -269,7 +269,8 @@ export default function FrameScrollCanvas({
         needsDraw = true;
       }
 
-      // 2. Slowly fade in frame_169 starting from frame_160 up to frame 168
+      // 2. Slowly fade in frame_169 starting from frame_160 up 
+      // to frame 168
       if (currentScroll >= FRAME_160_INDEX && currentScroll <= MADHUREM_END_INDEX) {
         const fadeProgress =
           (currentScroll - FRAME_160_INDEX) / (MADHUREM_END_INDEX - FRAME_160_INDEX);
@@ -544,14 +545,14 @@ export default function FrameScrollCanvas({
           {/* Responsive Board Wrapper anchored with exact object-cover dimensions */}
           <div
             ref={boardWrapperRef}
-            className="relative select-none will-change-transform origin-[71.2%_72.5%]"
+            className="relative select-none will-change-transform origin-[71.2%_70.5%]"
             style={{
               position: 'absolute',
               width: `${boardLayout.width}px`,
               height: `${boardLayout.height}px`,
               left: `${boardLayout.left}px`,
               top: `${boardLayout.top}px`,
-              transformOrigin: '71.2% 72.5%',
+              transformOrigin: '71.2% 70.5%',
               transform: 'scale(1)',
               transition: 'none',
             }}
@@ -578,7 +579,7 @@ export default function FrameScrollCanvas({
               className="absolute group focus:outline-none cursor-pointer transition-transform duration-200 hover:scale-105 active:scale-95"
               style={{
                 left: '71.2%',
-                top: '72.5%',
+                top: '70.5%',
                 transform: 'translate(-50%, -50%)',
                 width: '16.5%',
                 maxWidth: '98px',
@@ -586,13 +587,19 @@ export default function FrameScrollCanvas({
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
+                boxShadow: 'none',
+                outline: 'none',
               }}
               aria-label="RSVP - Mark your presence"
             >
               <img
                 src="/rsvp button.png"
                 alt="RSVP Button"
-                className="w-full h-auto object-contain select-none pointer-events-none drop-shadow-[0_8px_20px_rgba(0,0,0,0.5)] group-hover:drop-shadow-[0_12px_28px_rgba(240,178,86,0.45)] transition-all duration-300"
+                className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-200"
+                style={{
+                  filter: 'none',
+                  boxShadow: 'none',
+                }}
               />
             </button>
           </div>
