@@ -545,14 +545,14 @@ export default function FrameScrollCanvas({
           {/* Responsive Board Wrapper anchored with exact object-cover dimensions */}
           <div
             ref={boardWrapperRef}
-            className="relative select-none will-change-transform origin-[71.2%_70.5%]"
+            className="relative select-none will-change-transform origin-[71.2%_71.8%]"
             style={{
               position: 'absolute',
               width: `${boardLayout.width}px`,
               height: `${boardLayout.height}px`,
               left: `${boardLayout.left}px`,
               top: `${boardLayout.top}px`,
-              transformOrigin: '71.2% 70.5%',
+              transformOrigin: '71.2% 71.8%',
               transform: 'scale(1)',
               transition: 'none',
             }}
@@ -574,10 +574,10 @@ export default function FrameScrollCanvas({
               className="absolute flex flex-col items-center select-none"
               style={{
                 left: '71.2%',
-                top: '70.5%',
+                top: '71.8%',
                 transform: 'translate(-50%, -50%)',
-                width: '13.5%',
-                maxWidth: '80px',
+                width: '15.2%',
+                maxWidth: '92px',
                 zIndex: 20,
               }}
             >
@@ -610,7 +610,7 @@ export default function FrameScrollCanvas({
                 {/* Small 'Click here' text and static up arrow at bottom of the button in same font */}
                 <div className="mt-0.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-xs sm:text-sm md:text-base font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
+                    className="font-script text-sm sm:text-base md:text-lg font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
                     style={{
                       textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
                     }}
