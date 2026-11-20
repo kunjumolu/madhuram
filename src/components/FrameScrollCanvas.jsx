@@ -70,6 +70,8 @@ export default function FrameScrollCanvas({
   const [isSecondPageVisible, setIsSecondPageVisible] = useState(false);
   const isSecondPageVisibleRef = useRef(false);
   const lastToggleTimeRef = useRef(0);
+  const slideCooldownUntilRef = useRef(0);
+  const touchGestureStartedOnBoardRef = useRef(false);
 
   // Board zoom state (zooms directly in to RSVP button on scroll)
   const targetBoardZoomRef = useRef(1);
@@ -306,16 +308,26 @@ export default function FrameScrollCanvas({
       }
 
       // 5. Smooth hardware-accelerated zoom interpolation on the board page
-      const zoomDiff = targetBoardZoomRef.current - currentBoardZoomRef.current;
-      if (Math.abs(zoomDiff) > 0.001) {
-        currentBoardZoomRef.current += zoomDiff * 0.22;
+      const now = performance.now();
+      if (now < slideCooldownUntilRef.current) {
+        // Enforce scale(1) during slide cooldown to eliminate any autozoom jump
+        targetBoardZoomRef.current = 1.0;
+        currentBoardZoomRef.current = 1.0;
         if (boardWrapperRef.current) {
-          boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+          boardWrapperRef.current.style.transform = 'scale(1)';
         }
-      } else if (currentBoardZoomRef.current !== targetBoardZoomRef.current) {
-        currentBoardZoomRef.current = targetBoardZoomRef.current;
-        if (boardWrapperRef.current) {
-          boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+      } else {
+        const zoomDiff = targetBoardZoomRef.current - currentBoardZoomRef.current;
+        if (Math.abs(zoomDiff) > 0.001) {
+          currentBoardZoomRef.current += zoomDiff * 0.22;
+          if (boardWrapperRef.current) {
+            boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+          }
+        } else if (currentBoardZoomRef.current !== targetBoardZoomRef.current) {
+          currentBoardZoomRef.current = targetBoardZoomRef.current;
+          if (boardWrapperRef.current) {
+            boardWrapperRef.current.style.transform = `scale(${currentBoardZoomRef.current})`;
+          }
         }
       }
 
@@ -359,9 +371,15 @@ export default function FrameScrollCanvas({
         // If paper popup is currently open, do not zoom or navigate
         if (isPaperPopupOpenRef.current) return;
 
+        // Prevent auto-zoom from residual inertia or gestures right after sliding into view
+        if (now < slideCooldownUntilRef.current) return;
+
+        // For touch swipe, require that the touch gesture originated on the board page
+        if (isSwipe && !touchGestureStartedOnBoardRef.current) return;
+
         // Scrolling down (deltaY > 0): zoom in directly towards the RSVP button
         if (deltaY > 0) {
-          const zoomStep = deltaY * (isSwipe ? 0.0032 : 0.0018);
+          const zoomStep = deltaY * (isSwipe ? 0.0028 : 0.0016);
           targetBoardZoomRef.current = Math.min(2.4, targetBoardZoomRef.current + zoomStep);
           return;
         }
@@ -370,14 +388,15 @@ export default function FrameScrollCanvas({
         if (deltaY < 0) {
           // If currently zoomed in, zoom out first towards 1.0
           if (targetBoardZoomRef.current > 1.02) {
-            const zoomStep = Math.abs(deltaY) * (isSwipe ? 0.0032 : 0.0018);
+            const zoomStep = Math.abs(deltaY) * (isSwipe ? 0.0028 : 0.0016);
             targetBoardZoomRef.current = Math.max(1.0, targetBoardZoomRef.current - zoomStep);
             return;
           }
 
           // If at minimum zoom (1.0), scrolling up slides back to final canvas frame
-          if (deltaY < -10 && now - lastToggleTimeRef.current > 350) {
+          if (deltaY < -10 && now - lastToggleTimeRef.current > 400) {
             lastToggleTimeRef.current = now;
+            slideCooldownUntilRef.current = now + 900;
             isSecondPageVisibleRef.current = false;
             setIsSecondPageVisible(false);
             targetBoardZoomRef.current = 1.0;
@@ -412,6 +431,7 @@ export default function FrameScrollCanvas({
 
         if (deltaY > threshold && now - lastToggleTimeRef.current > 350) {
           lastToggleTimeRef.current = now;
+          slideCooldownUntilRef.current = now + 900; // Protection against autozoom
           isSecondPageVisibleRef.current = true;
           setIsSecondPageVisible(true);
           targetBoardZoomRef.current = 1.0;
@@ -448,6 +468,7 @@ export default function FrameScrollCanvas({
       touchStartY = e.touches[0].clientY;
       lastTouchX = touchStartX;
       lastTouchY = touchStartY;
+      touchGestureStartedOnBoardRef.current = isSecondPageVisibleRef.current;
     };
 
     const handleTouchMove = (e) => {
@@ -474,13 +495,15 @@ export default function FrameScrollCanvas({
         }
       }
 
-      // Swiping left on final frame slides to board page
+      // Swiping left on final frame slides to board page (with slide cooldown to prevent autozoom)
       if (
         !isSecondPageVisibleRef.current &&
         targetScrollRef.current >= FINAL_FRAME_INDEX - 0.5 &&
         deltaX > 12 &&
         Math.abs(deltaX) > Math.abs(deltaY)
       ) {
+        lastToggleTimeRef.current = performance.now();
+        slideCooldownUntilRef.current = performance.now() + 900;
         handleDelta(40, true);
         return;
       }
@@ -545,7 +568,7 @@ export default function FrameScrollCanvas({
           {/* Responsive Board Wrapper anchored with exact object-cover dimensions */}
           <div
             ref={boardWrapperRef}
-            className="relative select-none will-change-transform origin-[71.2%_71.8%]"
+            className="relative select-none origin-[71.2%_71.8%]"
             style={{
               position: 'absolute',
               width: `${boardLayout.width}px`,
@@ -557,15 +580,18 @@ export default function FrameScrollCanvas({
               transition: 'none',
             }}
           >
-            {/* Board Background Image */}
+            {/* Board Background Image with pristine full-fidelity rendering */}
             <img
               src="/board.png"
               alt="Celebration Board"
+              decoding="sync"
+              fetchpriority="high"
               className="w-full h-full block object-cover select-none pointer-events-none"
               style={{
                 border: 'none',
                 boxShadow: 'none',
                 outline: 'none',
+                imageRendering: '-webkit-optimize-contrast',
               }}
             />
 
@@ -627,18 +653,18 @@ export default function FrameScrollCanvas({
       {/* Paper Image Popup Modal */}
       {isPaperPopupOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 select-none bg-black/25 backdrop-blur-[3px] transition-all duration-300"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 select-none bg-black/25 backdrop-blur-[3px] transition-all duration-300"
           onClick={() => setIsPaperPopupOpen(false)}
         >
           <div
-            className="relative max-w-[85vw] max-h-[82vh] sm:max-w-[420px] md:max-w-[460px] animate-popup-3d flex items-center justify-center"
+            className="relative w-[94vw] max-w-[540px] sm:max-w-[600px] md:max-w-[650px] max-h-[92vh] animate-popup-3d flex items-center justify-center"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setIsPaperPopupOpen(false)}
-              className="absolute -top-3 -right-3 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1c1815]/90 text-[#f0b256] border border-[#f0b256]/60 flex items-center justify-center shadow-2xl hover:bg-[#2a241f] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+              className="absolute -top-3.5 -right-3.5 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#1c1815]/90 text-[#f0b256] border border-[#f0b256]/60 flex items-center justify-center shadow-2xl hover:bg-[#2a241f] hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
               aria-label="Close Invitation Paper"
             >
               <svg
@@ -655,11 +681,11 @@ export default function FrameScrollCanvas({
               </svg>
             </button>
 
-            {/* Paper Image: Medium size, leaving ~25% of background visible around it */}
+            {/* Paper Image: Increased size with crystal clarity */}
             <img
               src="/paper.png"
               alt="Wedding Invitation Paper"
-              className="w-full h-auto max-h-[82vh] object-contain rounded-lg drop-shadow-[0_20px_45px_rgba(0,0,0,0.75)] select-none pointer-events-none"
+              className="w-full h-auto max-h-[90vh] object-contain rounded-lg drop-shadow-[0_20px_45px_rgba(0,0,0,0.75)] select-none pointer-events-none"
             />
           </div>
         </div>
