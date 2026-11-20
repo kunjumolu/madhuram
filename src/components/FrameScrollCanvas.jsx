@@ -607,8 +607,8 @@ export default function FrameScrollCanvas({
                   }}
                 />
 
-                {/* Small 'Click here' text and static up arrow at bottom of the button in same font */}
-                <div className="mt-0.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                {/* Small 'Click here' text at bottom of the button in same font */}
+                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
                     className="font-script text-sm sm:text-base md:text-lg font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
                     style={{
@@ -617,17 +617,6 @@ export default function FrameScrollCanvas({
                   >
                     Click here
                   </span>
-                  <div className="mt-0.5 flex flex-col items-center">
-                    <svg
-                      className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#3d2514] group-hover:text-[#6b3f1f] transition-colors"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2.5"
-                      viewBox="0 0 24 24"
-                    >
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7" />
-                    </svg>
-                  </div>
                 </div>
               </button>
             </div>
