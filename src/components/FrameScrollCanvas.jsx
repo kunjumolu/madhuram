@@ -3,7 +3,7 @@ import { TOTAL_FRAMES } from '../utils/frames';
 import { Sparkles } from 'lucide-react';
 import ScrollInvitationModal from './ScrollInvitationModal';
 
-const FRAME_164_INDEX = 163; // 0-based index for frame_164.jpg (start slow fade-in)
+const FRAME_160_INDEX = 159; // 0-based index for frame_160.jpg (start slow fade-in)
 const FRAME_169_INDEX = 168; // 0-based index for frame_169.jpg (main final frame)
 
 export default function FrameScrollCanvas({
@@ -201,10 +201,10 @@ export default function FrameScrollCanvas({
         needsDraw = true;
       }
 
-      // 2. Slowly fade in frame_169 even from frame_164
-      if (currentScrollRef.current >= FRAME_164_INDEX) {
+      // 2. Slowly fade in frame_169 starting from frame_160
+      if (currentScrollRef.current >= FRAME_160_INDEX) {
         const fadeProgress =
-          (currentScrollRef.current - FRAME_164_INDEX) / (FRAME_169_INDEX - FRAME_164_INDEX);
+          (currentScrollRef.current - FRAME_160_INDEX) / (FRAME_169_INDEX - FRAME_160_INDEX);
         targetAlphaRef.current = Math.min(1, Math.max(0, fadeProgress));
       } else {
         targetAlphaRef.current = 0;
