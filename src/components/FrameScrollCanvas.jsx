@@ -1,7 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { TOTAL_FRAMES } from '../utils/frames';
-import { Sparkles } from 'lucide-react';
-import ScrollInvitationModal from './ScrollInvitationModal';
 
 const FRAME_160_INDEX = 159; // 0-based index for frame_160.jpg (start slow fade-in)
 const FRAME_169_INDEX = 168; // 0-based index for frame_169.jpg (main final frame)
@@ -32,7 +30,7 @@ export default function FrameScrollCanvas({
   const currentScrollRef = useRef(0);
   const renderedFrameRef = useRef(0);
 
-  // Smooth crossfade state for frame 240
+  // Smooth crossfade state for final frame
   const targetAlphaRef = useRef(0);
   const overlayAlphaRef = useRef(0);
   const stayUntilRef = useRef(0);
@@ -43,22 +41,12 @@ export default function FrameScrollCanvas({
   const isSecondPageVisibleRef = useRef(false);
   const lastToggleTimeRef = useRef(0);
 
-  // Scroll popup modal state
-  const [isScrollOpen, setIsScrollOpen] = useState(false);
-  const isScrollOpenRef = useRef(false);
-
-  useEffect(() => {
-    isScrollOpenRef.current = isScrollOpen;
-  }, [isScrollOpen]);
-
   const rAFRef = useRef(null);
 
-  // Preload second.png and popup.png in memory
+  // Preload second.png in memory
   useEffect(() => {
-    const img1 = new Image();
-    img1.src = '/second.png';
-    const img2 = new Image();
-    img2.src = '/popup.png';
+    const img = new Image();
+    img.src = '/second.png';
   }, []);
 
   // High-performance image render helper with cover fitting
@@ -160,8 +148,18 @@ export default function FrameScrollCanvas({
 
   useEffect(() => {
     updateDimensions();
-    window.addEventListener('resize', updateDimensions);
-    return () => window.removeEventListener('resize', updateDimensions);
+
+    let resizeTimer;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(updateDimensions, 100);
+    };
+
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      clearTimeout(resizeTimer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [updateDimensions]);
 
   // Initial draw
@@ -257,8 +255,7 @@ export default function FrameScrollCanvas({
     let lastTouchY = 0;
 
     const handleDelta = (deltaY, isSwipe = false) => {
-      // If scroll modal is open or preloading is not complete, don't move
-      if (isScrollOpenRef.current || !isPreloadCompleteRef.current) return;
+      if (!isPreloadCompleteRef.current) return;
 
       // Notify parent when forward scroll gesture starts
       if (onScrollStartRef.current && deltaY > 1.5) {
@@ -320,8 +317,6 @@ export default function FrameScrollCanvas({
     };
 
     const handleWheel = (e) => {
-      // If modal is open, allow native modal scroll
-      if (isScrollOpenRef.current) return;
       e.preventDefault();
       let delta = e.deltaY;
       if (e.deltaMode === 1) {
@@ -338,9 +333,6 @@ export default function FrameScrollCanvas({
     };
 
     const handleTouchMove = (e) => {
-      // If modal is open, allow native touch scrolling inside modal
-      if (isScrollOpenRef.current) return;
-
       if (e.cancelable) {
         e.preventDefault();
       }
@@ -427,53 +419,8 @@ export default function FrameScrollCanvas({
               outline: 'none',
             }}
           />
-
-          {/* Click Here Button at the bottom of the ivory board */}
-          <div
-            className="absolute left-1/2 -translate-x-1/2 z-20 flex flex-col items-center pointer-events-auto"
-            style={{
-              top: '71%',
-            }}
-          >
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsScrollOpen(true);
-              }}
-              onTouchEnd={(e) => {
-                e.stopPropagation();
-                setIsScrollOpen(true);
-              }}
-              className="relative group overflow-hidden px-7 py-2.5 sm:px-9 sm:py-3 rounded-full cursor-pointer transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_6px_25px_rgba(0,0,0,0.5),0_0_20px_rgba(212,175,55,0.5)] border-2 border-[#d4af37]"
-              style={{
-                background:
-                  'linear-gradient(135deg, #0e291b 0%, #173d28 45%, #0a1f13 100%)',
-              }}
-              title="Click here for complete invitation details"
-            >
-              {/* Reflective light sheen glancing from right to left with a 2-second break */}
-              <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
-                <div className="reflective-glance-sweep" />
-              </div>
-
-              {/* Button content in fancy luxury font */}
-              <div className="relative z-10 flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#fae28c] animate-pulse" />
-                <span className="font-heading text-xs sm:text-sm tracking-[0.25em] font-bold text-[#fbeea4] uppercase drop-shadow">
-                  Click Here
-                </span>
-                <Sparkles className="w-3.5 h-3.5 text-[#fae28c] animate-pulse" />
-              </div>
-            </button>
-          </div>
         </div>
       </div>
-
-      {/* Royal Rolling Scroll Invitation Modal Popup */}
-      <ScrollInvitationModal
-        isOpen={isScrollOpen}
-        onClose={() => setIsScrollOpen(false)}
-      />
     </div>
   );
 }
