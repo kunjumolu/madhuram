@@ -1,19 +1,50 @@
 import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 
+// Google Sheets Web App URL for live RSVP submissions
+// You can paste your deployed Web App URL here or define VITE_RSVP_SHEET_URL in .env
+const GOOGLE_SCRIPT_URL = import.meta.env.VITE_RSVP_SHEET_URL || '';
+
 export default function RsvpPaperModal({ isOpen, onClose }) {
   const [name, setName] = useState('');
   const [attending, setAttending] = useState('yes'); // 'yes' (I will be coming) is default
   const [guestCount, setGuestCount] = useState(1);
   const [wishes, setWishes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    if (!name.trim() || isSubmitting) return;
 
+    setIsSubmitting(true);
+
+    const payload = {
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+      name: name.trim(),
+      attending: attending === 'yes' ? 'I will be coming' : "I won't be able to make it",
+      guestCount: attending === 'yes' ? Number(guestCount) || 1 : 0,
+      wishes: wishes.trim() || '-',
+    };
+
+    if (GOOGLE_SCRIPT_URL) {
+      try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
+          body: JSON.stringify(payload),
+        });
+      } catch (err) {
+        console.error('RSVP submission error:', err);
+      }
+    }
+
+    setIsSubmitting(false);
     setIsSubmitted(true);
 
     // Celebratory golden rose petal confetti
@@ -200,7 +231,8 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
               <div className="flex justify-center pt-2.5 sm:pt-3">
                 <button
                   type="submit"
-                  className="group cursor-pointer bg-transparent border-none p-0 focus:outline-none flex flex-col items-center transition-transform duration-200 hover:scale-105 active:scale-95"
+                  disabled={isSubmitting}
+                  className="group cursor-pointer bg-transparent border-none p-0 focus:outline-none flex flex-col items-center transition-transform duration-200 hover:scale-105 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                   style={{
                     boxShadow: 'none',
                     outline: 'none',
@@ -213,7 +245,7 @@ export default function RsvpPaperModal({ isOpen, onClose }) {
                       textShadow: '0 1px 2px rgba(255, 255, 255, 0.7)',
                     }}
                   >
-                    Submit RSVP ♡
+                    {isSubmitting ? 'Submitting... ♡' : 'Submit RSVP ♡'}
                   </span>
                   <div className="w-24 sm:w-32 h-0.5 sm:h-1 bg-[#1a0a03] mt-0.5 rounded-full" />
                 </button>
