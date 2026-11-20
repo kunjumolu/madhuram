@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import confetti from 'canvas-confetti';
 
 // Google Sheets Web App URL for live RSVP submissions
-// You can paste your deployed Web App URL here or define VITE_RSVP_SHEET_URL in .env
-const GOOGLE_SCRIPT_URL = import.meta.env.VITE_RSVP_SHEET_URL || '';
+const GOOGLE_SCRIPT_URL =
+  import.meta.env.VITE_RSVP_SHEET_URL ||
+  'https://script.google.com/macros/s/AKfycbwzpI-f7YVOwC6TAO9hRidoyGd4DJ_Gy6cpXodTQ5cX7sujnU7X0Z7e01R5THv9pepU/exec';
 
 export default function RsvpPaperModal({ isOpen, onClose }) {
   const [name, setName] = useState('');
