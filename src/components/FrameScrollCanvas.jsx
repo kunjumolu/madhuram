@@ -8,12 +8,6 @@ const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhur
 const DETAILS_START_INDEX = MADHUREM_FRAMES; // 169: 0-based index for details/frame_01.jpg
 const FINAL_FRAME_INDEX = TOTAL_FRAMES - 1; // 408: 0-based index for details/frame_240.jpg
 
-// Directions button appearance window: details2 frame_90 to frame_215 with smooth fade-in/fade-out
-const DIRECTIONS_BTN_IN_START = DETAILS_START_INDEX + 87;   // ~frame 88: begin fade-in
-const DIRECTIONS_BTN_IN_END = DETAILS_START_INDEX + 92;     // ~frame 93: fully visible (100% opacity)
-const DIRECTIONS_BTN_OUT_START = DETAILS_START_INDEX + 212; // ~frame 213: begin fade-out
-const DIRECTIONS_BTN_OUT_END = DETAILS_START_INDEX + 217;   // ~frame 218: fully faded out (0% opacity)
-
 // Compute exact object-cover layout rectangle for board.png (aspect 941 / 1672)
 function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 1672) {
   if (!containerWidth || !containerHeight) {
@@ -401,24 +395,11 @@ export default function FrameScrollCanvas({
         drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
       }
 
-      // 7. Update directions button opacity between frame_90 and frame_215 of details2
+      // 7. Update directions button opacity: appears smoothly ONLY on the final details card (last scroll)
       let dirOpacity = 0;
-      if (!isSecondPageVisibleRef.current) {
-        if (currentScroll >= DIRECTIONS_BTN_IN_START && currentScroll <= DIRECTIONS_BTN_OUT_END) {
-          if (currentScroll < DIRECTIONS_BTN_IN_END) {
-            // Smooth fade-in (0.0 -> 1.0)
-            dirOpacity = (currentScroll - DIRECTIONS_BTN_IN_START) / (DIRECTIONS_BTN_IN_END - DIRECTIONS_BTN_IN_START);
-          } else if (currentScroll > DIRECTIONS_BTN_OUT_START) {
-            // Smooth fade-out (1.0 -> 0.0)
-            dirOpacity = 1 - (currentScroll - DIRECTIONS_BTN_OUT_START) / (DIRECTIONS_BTN_OUT_END - DIRECTIONS_BTN_OUT_START);
-          } else {
-            // Fully visible
-            dirOpacity = 1.0;
-          }
-        }
+      if (!isSecondPageVisibleRef.current && currentScroll >= FINAL_FRAME_INDEX - 8) {
+        dirOpacity = Math.min(1, Math.max(0, (currentScroll - (FINAL_FRAME_INDEX - 8)) / 5));
       }
-      dirOpacity = Math.min(1, Math.max(0, dirOpacity));
-
       if (directionsButtonRef.current) {
         directionsButtonRef.current.style.opacity = String(dirOpacity);
         directionsButtonRef.current.style.pointerEvents = dirOpacity > 0.7 ? 'auto' : 'none';
@@ -670,10 +651,10 @@ export default function FrameScrollCanvas({
             {/* Click here for directions button: positioned cleanly below venue address */}
             <div
               ref={directionsButtonRef}
-              className="absolute select-none pointer-events-none transition-transform duration-200"
+              className="absolute select-none pointer-events-none transition-opacity duration-300"
               style={{
                 left: '50%',
-                top: '81.5%',
+                top: '78.6%',
                 transform: 'translate(-50%, -50%)',
                 opacity: 0,
                 zIndex: 30,
@@ -684,10 +665,10 @@ export default function FrameScrollCanvas({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full border border-[#b38328] bg-gradient-to-r from-[#d4af37] via-[#ffd78a] to-[#d4af37] text-[#2d180c] shadow-[0_4px_14px_rgba(0,0,0,0.35),0_0_12px_rgba(212,175,55,0.4)] hover:shadow-[0_4px_18px_rgba(212,175,55,0.65)] hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#b38328] bg-gradient-to-r from-[#d4af37] via-[#ffd78a] to-[#d4af37] text-[#2d180c] shadow-[0_3px_12px_rgba(0,0,0,0.35),0_0_10px_rgba(212,175,55,0.4)] hover:shadow-[0_4px_18px_rgba(212,175,55,0.65)] hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
                 aria-label="Click here for directions on Google Maps"
               >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2d180c] shrink-0 animate-bounce" />
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2d180c] shrink-0" />
                 <span className="font-serif-luxury italic font-bold tracking-wide text-xs sm:text-sm text-[#2d180c] whitespace-nowrap">
                   Click here for directions
                 </span>
