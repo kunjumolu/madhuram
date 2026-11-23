@@ -5,8 +5,8 @@ export const TOTAL_FRAMES = MADHUREM_FRAMES + DETAILS_FRAMES; // 409 frames tota
 /**
  * Returns the URL for a specific frame number (1-based index: 1 to 409)
  * Pattern:
- * 1..169   => /madhurem/frame_01.jpg .. /madhurem/frame_169.jpg
- * 170..409 => /details/frame_01.jpg .. /details/frame_240.jpg
+ * 1..169   => /madhurem/frame_01.webp .. /madhurem/frame_169.webp
+ * 170..409 => /details2/frame_01.webp .. /details2/frame_240.webp
  */
 export function getFrameUrl(index) {
   const clamped = Math.max(1, Math.min(TOTAL_FRAMES, Math.round(index)));
@@ -16,7 +16,7 @@ export function getFrameUrl(index) {
   } else {
     const detailsNum = clamped - MADHUREM_FRAMES;
     const padded = detailsNum < 10 ? `0${detailsNum}` : `${detailsNum}`;
-    return `/details/frame_${padded}.webp`;
+    return `/details2/frame_${padded}.webp`;
   }
 }
 
