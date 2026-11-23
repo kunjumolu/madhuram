@@ -673,7 +673,7 @@ export default function FrameScrollCanvas({
               className="absolute select-none pointer-events-none transition-transform duration-200"
               style={{
                 left: '50%',
-                top: '73.4%',
+                top: '81.5%',
                 transform: 'translate(-50%, -50%)',
                 opacity: 0,
                 zIndex: 30,
