@@ -3,9 +3,8 @@ import React from 'react';
 export default function LoadingScreen({ percent, isComplete, isDismissed }) {
   return (
     <div
-      className={`fixed inset-0 z-40 overflow-hidden select-none transition-opacity duration-300 ease-out ${
-        isDismissed ? 'opacity-0 pointer-events-none' : 'opacity-100'
-      }`}
+      className={`fixed inset-0 z-40 overflow-hidden select-none transition-opacity duration-300 ease-out ${isDismissed ? 'opacity-0 pointer-events-none' : 'opacity-100'
+        }`}
     >
       {/* Background: Pristine First Frame (Frozen Stage Overview while preloading) */}
       <img
