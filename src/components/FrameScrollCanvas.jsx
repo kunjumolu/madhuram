@@ -685,7 +685,7 @@ export default function FrameScrollCanvas({
               className="absolute select-none pointer-events-none transition-opacity duration-300"
               style={{
                 left: '50%',
-                top: '78.6%',
+                top: '78.5%',
                 transform: 'translate(-50%, -50%)',
                 opacity: 0,
                 zIndex: 30,
@@ -696,11 +696,11 @@ export default function FrameScrollCanvas({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#6b3d1f] bg-gradient-to-r from-[#3d1e10] via-[#542d18] to-[#3d1e10] text-white shadow-[0_4px_14px_rgba(0,0,0,0.35)] hover:shadow-[0_4px_18px_rgba(0,0,0,0.5)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#c69f58]/85 bg-gradient-to-r from-[#4e3115] via-[#66411d] to-[#4e3115] text-[#fffbf5] shadow-[0_4px_14px_rgba(40,20,5,0.45),0_0_10px_rgba(198,159,88,0.3)] hover:shadow-[0_4px_18px_rgba(198,159,88,0.5)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
                 aria-label="Click here for directions on Google Maps"
               >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
-                <span className="font-serif-luxury italic font-bold tracking-wide text-xs sm:text-sm text-white whitespace-nowrap">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#ffd78a] shrink-0" />
+                <span className="font-heading font-semibold tracking-[0.14em] uppercase text-[11px] sm:text-xs text-[#fffbf5] whitespace-nowrap">
                   Click here for directions
                 </span>
               </a>
