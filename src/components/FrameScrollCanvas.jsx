@@ -696,11 +696,11 @@ export default function FrameScrollCanvas({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#b38328] bg-gradient-to-r from-[#d4af37] via-[#ffd78a] to-[#d4af37] text-[#2d180c] shadow-[0_3px_12px_rgba(0,0,0,0.35),0_0_10px_rgba(212,175,55,0.4)] hover:shadow-[0_4px_18px_rgba(212,175,55,0.65)] hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#6b3d1f] bg-gradient-to-r from-[#3d1e10] via-[#542d18] to-[#3d1e10] text-white shadow-[0_4px_14px_rgba(0,0,0,0.35)] hover:shadow-[0_4px_18px_rgba(0,0,0,0.5)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
                 aria-label="Click here for directions on Google Maps"
               >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#2d180c] shrink-0" />
-                <span className="font-serif-luxury italic font-bold tracking-wide text-xs sm:text-sm text-[#2d180c] whitespace-nowrap">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white shrink-0" />
+                <span className="font-serif-luxury italic font-bold tracking-wide text-xs sm:text-sm text-white whitespace-nowrap">
                   Click here for directions
                 </span>
               </a>
