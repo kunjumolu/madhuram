@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
+import { MapPin } from 'lucide-react';
 import { TOTAL_FRAMES, MADHUREM_FRAMES } from '../utils/frames';
 import RsvpPaperModal from './RsvpPaperModal';
 
@@ -20,6 +21,34 @@ function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 167
     h = containerWidth / imageAspect;
     left = 0;
     top = (containerHeight - h) / 2;
+  } else {
+    // Mobile / portrait
+    h = containerHeight;
+    w = containerHeight * imageAspect;
+    left = (containerWidth - w) / 2;
+    top = 0;
+  }
+  return {
+    width: Math.round(w),
+    height: Math.round(h),
+    left: Math.round(left),
+    top: Math.round(top),
+  };
+}
+
+// Compute exact object-cover layout rectangle for details2 frames (aspect 1080 / 1920)
+function getCanvasCoverLayout(containerWidth, containerHeight, imageAspect = 1080 / 1920) {
+  if (!containerWidth || !containerHeight) {
+    return { width: 0, height: 0, left: 0, top: 0 };
+  }
+  const screenAspect = containerWidth / containerHeight;
+  let w, h, left, top;
+  if (screenAspect > imageAspect) {
+    // Desktop / widescreen
+    w = containerWidth;
+    h = containerWidth / imageAspect;
+    left = 0;
+    top = (containerHeight - h) * 0.45;
   } else {
     // Mobile / portrait
     h = containerHeight;
@@ -86,6 +115,15 @@ export default function FrameScrollCanvas({
   const [boardLayout, setBoardLayout] = useState(() => {
     if (typeof window !== 'undefined') {
       return getCoverLayout(window.innerWidth, window.innerHeight);
+    }
+    return { width: 0, height: 0, left: 0, top: 0 };
+  });
+
+  // Directions button ref and canvas cover layout
+  const directionsButtonRef = useRef(null);
+  const [canvasLayout, setCanvasLayout] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return getCanvasCoverLayout(window.innerWidth, window.innerHeight);
     }
     return { width: 0, height: 0, left: 0, top: 0 };
   });
@@ -209,6 +247,7 @@ export default function FrameScrollCanvas({
 
     dimensionsRef.current = { width, height, dpr };
     setBoardLayout(getCoverLayout(width, height));
+    setCanvasLayout(getCanvasCoverLayout(width, height));
 
     const targetW = Math.round(width * dpr);
     const targetH = Math.round(height * dpr);
@@ -354,6 +393,16 @@ export default function FrameScrollCanvas({
       // 6. Redraw canvas only when required
       if (needsDraw) {
         drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
+      }
+
+      // 7. Update directions button opacity on the final details card
+      let dirOpacity = 0;
+      if (!isSecondPageVisibleRef.current && currentScroll >= FINAL_FRAME_INDEX - 8) {
+        dirOpacity = Math.min(1, Math.max(0, (currentScroll - (FINAL_FRAME_INDEX - 8)) / 5));
+      }
+      if (directionsButtonRef.current) {
+        directionsButtonRef.current.style.opacity = String(dirOpacity);
+        directionsButtonRef.current.style.pointerEvents = dirOpacity > 0.8 ? 'auto' : 'none';
       }
 
       rAFRef.current = requestAnimationFrame(loop);
@@ -587,6 +636,45 @@ export default function FrameScrollCanvas({
             ref={canvasRef}
             className="relative z-10 w-full h-full object-cover select-none pointer-events-none"
           />
+
+          {/* Invitation Details Overlay: Positioned precisely over the canvas card layout */}
+          <div
+            className="absolute z-20 pointer-events-none select-none"
+            style={{
+              position: 'absolute',
+              width: `${canvasLayout.width}px`,
+              height: `${canvasLayout.height}px`,
+              left: `${canvasLayout.left}px`,
+              top: `${canvasLayout.top}px`,
+            }}
+          >
+            {/* Click here for directions button: positioned cleanly below venue address */}
+            <div
+              ref={directionsButtonRef}
+              className="absolute select-none pointer-events-none transition-transform duration-200"
+              style={{
+                left: '50%',
+                top: '73.4%',
+                transform: 'translate(-50%, -50%)',
+                opacity: 0,
+                zIndex: 30,
+              }}
+            >
+              <a
+                href="https://maps.google.com/?q=St.+Mary's+Jacobite+Syrian+Church+Auditorium,+A.M+Road+Kuruppampady,+Perumbavoor"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full border border-[#b88628] bg-gradient-to-r from-[#201208] via-[#381f10] to-[#201208] text-[#f7d794] shadow-[0_3px_12px_rgba(0,0,0,0.5),0_0_10px_rgba(212,175,55,0.3)] hover:shadow-[0_4px_16px_rgba(212,175,55,0.5)] hover:brightness-110 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                aria-label="Click here for directions on Google Maps"
+              >
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#f0b256] shrink-0 animate-bounce" />
+                <span className="font-serif-luxury italic font-bold tracking-wide text-xs sm:text-sm text-[#faedd7] whitespace-nowrap drop-shadow-sm">
+                  Click here for directions
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
 
         {/* Panel 2: Board Page touching Panel 1 on the right */}
