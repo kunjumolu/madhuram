@@ -8,6 +8,22 @@ const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhur
 const DETAILS_START_INDEX = MADHUREM_FRAMES; // 169: 0-based index for details/frame_01.jpg
 const FINAL_FRAME_INDEX = TOTAL_FRAMES - 1; // 408: 0-based index for details/frame_240.jpg
 
+// Directions button appearance window on Invitation Card (details2 frame_90 to frame_215)
+const DIRECTIONS_BTN_IN_START = DETAILS_START_INDEX + 87;   // ~frame 88: begin fade-in as card comes into view
+const DIRECTIONS_BTN_IN_END = DETAILS_START_INDEX + 93;     // ~frame 94: fully visible (100% opacity)
+const DIRECTIONS_BTN_OUT_START = DETAILS_START_INDEX + 212; // ~frame 213: begin fade-out before zooming away
+const DIRECTIONS_BTN_OUT_END = DETAILS_START_INDEX + 217;   // ~frame 218: fully faded out (0% opacity)
+
+// Dynamically track exact gap center between venue address and quote across frames 90 to 215
+function getDirectionsButtonTop(detailsFrame) {
+  if (detailsFrame <= 95) return 78.5;
+  if (detailsFrame <= 120) return 78.5 + ((detailsFrame - 95) / 25) * 3.0;
+  if (detailsFrame <= 155) return 81.5 + ((detailsFrame - 120) / 35) * 0.5;
+  if (detailsFrame <= 190) return 82.0 - ((detailsFrame - 155) / 35) * 1.0;
+  if (detailsFrame <= 215) return 81.0 - ((detailsFrame - 190) / 25) * 1.5;
+  return 78.5;
+}
+
 // Compute exact object-cover layout rectangle for board.png (aspect 941 / 1672)
 function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 1672) {
   if (!containerWidth || !containerHeight) {
@@ -395,13 +411,28 @@ export default function FrameScrollCanvas({
         drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
       }
 
-      // 7. Update directions button opacity: appears smoothly ONLY on the final details card (last scroll)
+      // 7. Update directions button: appears smoothly on the invitation card (details2 frame_90 to frame_215)
       let dirOpacity = 0;
-      if (!isSecondPageVisibleRef.current && currentScroll >= FINAL_FRAME_INDEX - 8) {
-        dirOpacity = Math.min(1, Math.max(0, (currentScroll - (FINAL_FRAME_INDEX - 8)) / 5));
+      let dirTopPct = 78.5;
+
+      if (!isSecondPageVisibleRef.current) {
+        if (currentScroll >= DIRECTIONS_BTN_IN_START && currentScroll <= DIRECTIONS_BTN_OUT_END) {
+          if (currentScroll < DIRECTIONS_BTN_IN_END) {
+            dirOpacity = (currentScroll - DIRECTIONS_BTN_IN_START) / (DIRECTIONS_BTN_IN_END - DIRECTIONS_BTN_IN_START);
+          } else if (currentScroll > DIRECTIONS_BTN_OUT_START) {
+            dirOpacity = 1 - (currentScroll - DIRECTIONS_BTN_OUT_START) / (DIRECTIONS_BTN_OUT_END - DIRECTIONS_BTN_OUT_START);
+          } else {
+            dirOpacity = 1.0;
+          }
+
+          const detailsFrame = currentScroll - DETAILS_START_INDEX;
+          dirTopPct = getDirectionsButtonTop(detailsFrame);
+        }
       }
+
       if (directionsButtonRef.current) {
         directionsButtonRef.current.style.opacity = String(dirOpacity);
+        directionsButtonRef.current.style.top = `${dirTopPct}%`;
         directionsButtonRef.current.style.pointerEvents = dirOpacity > 0.7 ? 'auto' : 'none';
       }
 
