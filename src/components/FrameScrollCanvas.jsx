@@ -8,6 +8,12 @@ const MADHUREM_END_INDEX = MADHUREM_FRAMES - 1; // 168: 0-based index for madhur
 const DETAILS_START_INDEX = MADHUREM_FRAMES; // 169: 0-based index for details/frame_01.jpg
 const FINAL_FRAME_INDEX = TOTAL_FRAMES - 1; // 408: 0-based index for details/frame_240.jpg
 
+// Directions button appearance window: details2 frame_90 to frame_215 with smooth fade-in/fade-out
+const DIRECTIONS_BTN_IN_START = DETAILS_START_INDEX + 87;   // ~frame 88: begin fade-in
+const DIRECTIONS_BTN_IN_END = DETAILS_START_INDEX + 92;     // ~frame 93: fully visible (100% opacity)
+const DIRECTIONS_BTN_OUT_START = DETAILS_START_INDEX + 212; // ~frame 213: begin fade-out
+const DIRECTIONS_BTN_OUT_END = DETAILS_START_INDEX + 217;   // ~frame 218: fully faded out (0% opacity)
+
 // Compute exact object-cover layout rectangle for board.png (aspect 941 / 1672)
 function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 1672) {
   if (!containerWidth || !containerHeight) {
@@ -395,14 +401,27 @@ export default function FrameScrollCanvas({
         drawFrame(renderedFrameRef.current, overlayAlphaRef.current, seamAlpha);
       }
 
-      // 7. Update directions button opacity on the final details card
+      // 7. Update directions button opacity between frame_90 and frame_215 of details2
       let dirOpacity = 0;
-      if (!isSecondPageVisibleRef.current && currentScroll >= FINAL_FRAME_INDEX - 8) {
-        dirOpacity = Math.min(1, Math.max(0, (currentScroll - (FINAL_FRAME_INDEX - 8)) / 5));
+      if (!isSecondPageVisibleRef.current) {
+        if (currentScroll >= DIRECTIONS_BTN_IN_START && currentScroll <= DIRECTIONS_BTN_OUT_END) {
+          if (currentScroll < DIRECTIONS_BTN_IN_END) {
+            // Smooth fade-in (0.0 -> 1.0)
+            dirOpacity = (currentScroll - DIRECTIONS_BTN_IN_START) / (DIRECTIONS_BTN_IN_END - DIRECTIONS_BTN_IN_START);
+          } else if (currentScroll > DIRECTIONS_BTN_OUT_START) {
+            // Smooth fade-out (1.0 -> 0.0)
+            dirOpacity = 1 - (currentScroll - DIRECTIONS_BTN_OUT_START) / (DIRECTIONS_BTN_OUT_END - DIRECTIONS_BTN_OUT_START);
+          } else {
+            // Fully visible
+            dirOpacity = 1.0;
+          }
+        }
       }
+      dirOpacity = Math.min(1, Math.max(0, dirOpacity));
+
       if (directionsButtonRef.current) {
         directionsButtonRef.current.style.opacity = String(dirOpacity);
-        directionsButtonRef.current.style.pointerEvents = dirOpacity > 0.8 ? 'auto' : 'none';
+        directionsButtonRef.current.style.pointerEvents = dirOpacity > 0.7 ? 'auto' : 'none';
       }
 
       rAFRef.current = requestAnimationFrame(loop);
