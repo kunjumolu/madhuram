@@ -14,6 +14,97 @@ const DIRECTIONS_BTN_IN_END = DETAILS_START_INDEX + 96;     // ~frame 97: fully 
 const DIRECTIONS_BTN_OUT_START = DETAILS_START_INDEX + 208; // ~frame 209: begin fade-out before zooming away
 const DIRECTIONS_BTN_OUT_END = DETAILS_START_INDEX + 214;   // ~frame 215: fully faded out (0% opacity)
 
+// Precomputed per-frame exact gap center Y coordinates on 1080x1920 image (frame 90 to 215)
+const GAP_Y_TABLE = [
+  1558, 1558, 1549, 1541, 1534, 1528, 1521, 1526, 1530, 1532, 1535, 1538, 1540, 1543, 1546, 1549, 1551, 1554, 1556, 1558,
+  1559, 1561, 1562, 1563, 1564, 1565, 1566, 1567, 1567, 1568, 1569, 1569, 1570, 1570, 1571, 1571, 1572, 1572, 1573, 1573,
+  1573, 1574, 1574, 1575, 1575, 1576, 1576, 1576, 1577, 1577, 1578, 1578, 1578, 1578, 1579, 1579, 1579, 1579, 1579, 1580,
+  1580, 1580, 1580, 1580, 1580, 1580, 1580, 1580, 1580, 1580, 1578, 1577, 1576, 1575, 1573, 1573, 1572, 1572, 1572, 1573,
+  1573, 1573, 1573, 1572, 1572, 1571, 1571, 1570, 1569, 1568, 1568, 1567, 1566, 1565, 1564, 1563, 1563, 1562, 1561, 1560,
+  1560, 1559, 1558, 1557, 1555, 1553, 1553, 1552, 1551, 1551, 1552, 1551, 1550, 1549, 1548, 1548, 1547, 1547, 1546, 1545,
+  1543, 1539, 1534, 1526, 1523, 1518
+];
+
+// High-performance canvas text drawer: embeds 'Click here for directions' directly into the canvas
+function drawDirectionsOnCanvas(ctx, width, height, imageY, alpha = 1) {
+  if (alpha <= 0.005) return;
+
+  const aspect = 1080 / 1920;
+  const screenAspect = width / height;
+  let drawW, drawH, drawX, drawY;
+
+  if (screenAspect > aspect) {
+    drawW = width;
+    drawH = width / aspect;
+    drawX = 0;
+    drawY = (height - drawH) * 0.45;
+  } else {
+    drawH = height;
+    drawW = height * aspect;
+    drawX = (width - drawW) / 2;
+    drawY = 0;
+  }
+
+  const screenX = drawX + (540 / 1080) * drawW;
+  const screenY = drawY + (imageY / 1920) * drawH;
+
+  const scale = drawW / 400;
+  const fontSize = Math.max(16, Math.round(22 * scale));
+
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, Math.max(0, alpha));
+
+  ctx.font = `${fontSize}px "Great Vibes", "Alex Brush", cursive`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  const text = 'Click here for directions';
+  const textWidth = ctx.measureText(text).width;
+
+  const pinSpacing = Math.round(7 * scale);
+  const pinSize = Math.max(13, Math.round(16 * scale));
+  const totalWidth = pinSize + pinSpacing + textWidth;
+  const startX = screenX - totalWidth / 2;
+
+  // 1. Draw MapPin icon
+  const pinCenterX = startX + pinSize / 2;
+  const pinTopY = screenY - pinSize / 2;
+  const pinRadius = pinSize * 0.36;
+  const pinCircleCenterY = pinTopY + pinRadius;
+
+  ctx.fillStyle = '#7a4822';
+  ctx.beginPath();
+  ctx.arc(pinCenterX, pinCircleCenterY, pinRadius, Math.PI * 0.85, Math.PI * 0.15, true);
+  ctx.lineTo(pinCenterX, pinTopY + pinSize);
+  ctx.closePath();
+  ctx.fill();
+
+  // Pin inner hole
+  ctx.fillStyle = '#fcebd4';
+  ctx.beginPath();
+  ctx.arc(pinCenterX, pinCircleCenterY, pinRadius * 0.42, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 2. Draw Text
+  const textCenterX = startX + pinSize + pinSpacing + textWidth / 2;
+  ctx.fillStyle = '#3d2514';
+  ctx.fillText(text, textCenterX, screenY);
+
+  // 3. Draw Underline
+  const underlineY = screenY + Math.round(fontSize * 0.42);
+  const underlineStartX = textCenterX - textWidth / 2;
+  const underlineEndX = textCenterX + textWidth / 2;
+
+  ctx.strokeStyle = 'rgba(184, 140, 76, 0.55)';
+  ctx.lineWidth = Math.max(1, Math.round(1.2 * scale));
+  ctx.beginPath();
+  ctx.moveTo(underlineStartX, underlineY);
+  ctx.lineTo(underlineEndX, underlineY);
+  ctx.stroke();
+
+  ctx.restore();
+}
+
 // Compute exact object-cover layout rectangle for board.png (aspect 941 / 1672)
 function getCoverLayout(containerWidth, containerHeight, imageAspect = 941 / 1672) {
   if (!containerWidth || !containerHeight) {
@@ -237,6 +328,24 @@ export default function FrameScrollCanvas({
         );
       }
 
+      // 4. Draw directions text directly on canvas locked to the card in exact sync
+      if (frameIndex >= DIRECTIONS_BTN_IN_START && frameIndex <= DIRECTIONS_BTN_OUT_END) {
+        let alpha = 1.0;
+        if (frameIndex < DIRECTIONS_BTN_IN_END) {
+          alpha = (frameIndex - DIRECTIONS_BTN_IN_START) / (DIRECTIONS_BTN_IN_END - DIRECTIONS_BTN_IN_START);
+        } else if (frameIndex > DIRECTIONS_BTN_OUT_START) {
+          alpha = 1 - (frameIndex - DIRECTIONS_BTN_OUT_START) / (DIRECTIONS_BTN_OUT_END - DIRECTIONS_BTN_OUT_START);
+        }
+
+        if (alpha > 0.005) {
+          const detailsFrame = frameIndex - DETAILS_START_INDEX;
+          const tableIdx = Math.max(0, Math.min(GAP_Y_TABLE.length - 1, detailsFrame - 90));
+          const targetImageY = GAP_Y_TABLE[tableIdx];
+
+          drawDirectionsOnCanvas(ctx, width, height, targetImageY, alpha);
+        }
+      }
+
       ctx.restore();
     },
     [images, renderImageToCtx]
@@ -282,10 +391,17 @@ export default function FrameScrollCanvas({
     };
   }, [updateDimensions]);
 
-  // Initial draw
+  // Initial draw & redraw when fonts load
   useEffect(() => {
     if (images && images.length > 0) {
       drawFrame(0, 0, 0);
+    }
+    if (typeof document !== 'undefined' && document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(() => {
+        if (canvasRef.current) {
+          drawFrame(renderedFrameRef.current, overlayAlphaRef.current, 0);
+        }
+      });
     }
   }, [images, drawFrame]);
 
@@ -664,15 +780,14 @@ export default function FrameScrollCanvas({
               top: `${canvasLayout.top}px`,
             }}
           >
-            {/* Click here for directions button: positioned cleanly below venue address */}
+            {/* Clickable Hitbox for Google Maps Directions (invisible overlay over canvas text) */}
             <div
               ref={directionsButtonRef}
-              className="absolute select-none pointer-events-none transition-opacity duration-300"
+              className="absolute select-none pointer-events-none"
               style={{
                 left: '50%',
                 top: '80.8%',
                 transform: 'translate(-50%, -50%)',
-                opacity: 0,
                 zIndex: 30,
               }}
             >
@@ -681,14 +796,9 @@ export default function FrameScrollCanvas({
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="group relative z-10 flex items-center justify-center gap-1.5 px-2 py-1 bg-transparent text-[#3d2514] hover:text-[#6b3f1f] active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                className="block w-[320px] h-[55px] cursor-pointer pointer-events-auto bg-transparent"
                 aria-label="Click here for directions on Google Maps"
-              >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a4822] group-hover:text-[#6b3f1f] shrink-0 transition-colors" />
-                <span className="font-script text-lg sm:text-xl md:text-2xl font-normal tracking-wide text-[#3d2514] group-hover:text-[#6b3f1f] whitespace-nowrap leading-none transition-colors underline decoration-[#b88c4c]/50 underline-offset-4 group-hover:decoration-[#6b3f1f]">
-                  Click here for directions
-                </span>
-              </a>
+              />
             </div>
           </div>
         </div>
