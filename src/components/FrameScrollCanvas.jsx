@@ -792,7 +792,7 @@ export default function FrameScrollCanvas({
               }}
             >
               <a
-                href="https://www.google.com/maps/search/?api=1&query=Kuruppampady+Church+Auditorium,+AM+Road,+Kuruppampady"
+                href="https://maps.app.goo.gl/Sgrvr3t7YB4Zjoh46"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
