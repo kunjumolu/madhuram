@@ -786,7 +786,7 @@ export default function FrameScrollCanvas({
               className="absolute select-none pointer-events-none"
               style={{
                 left: '50%',
-                top: '80.8%',
+                top: '82%',
                 transform: 'translate(-50%, -50%)',
                 zIndex: 30,
               }}
