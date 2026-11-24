@@ -692,15 +692,15 @@ export default function FrameScrollCanvas({
               }}
             >
               <a
-                href="https://maps.google.com/?q=St.+Mary's+Jacobite+Syrian+Church+Auditorium,+A.M+Road+Kuruppampady,+Perumbavoor"
+                href="https://www.google.com/maps/search/?api=1&query=Kuruppampady+Church+Auditorium,+AM+Road,+Kuruppampady"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="group relative z-10 flex items-center justify-center gap-1.5 sm:gap-2 px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full border border-[#d2b17a]/75 bg-gradient-to-r from-[#faeedb] via-[#fff7ea] to-[#faeedb] text-[#3d2514] shadow-[0_3px_12px_rgba(61,37,20,0.18),0_1px_4px_rgba(0,0,0,0.06)] hover:shadow-[0_4px_16px_rgba(61,37,20,0.28)] hover:brightness-105 active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
+                className="group relative z-10 flex items-center justify-center gap-1.5 px-2 py-1 bg-transparent text-[#3d2514] hover:text-[#6b3f1f] active:scale-95 transition-all duration-200 cursor-pointer pointer-events-auto text-center"
                 aria-label="Click here for directions on Google Maps"
               >
-                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a4822] shrink-0" />
-                <span className="font-script text-base sm:text-lg md:text-xl font-normal tracking-wide text-[#3d2514] whitespace-nowrap leading-none">
+                <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#7a4822] group-hover:text-[#6b3f1f] shrink-0 transition-colors" />
+                <span className="font-script text-lg sm:text-xl md:text-2xl font-normal tracking-wide text-[#3d2514] group-hover:text-[#6b3f1f] whitespace-nowrap leading-none transition-colors underline decoration-[#b88c4c]/50 underline-offset-4 group-hover:decoration-[#6b3f1f]">
                   Click here for directions
                 </span>
               </a>
