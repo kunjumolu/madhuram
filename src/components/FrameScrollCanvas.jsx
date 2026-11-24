@@ -865,10 +865,10 @@ export default function FrameScrollCanvas({
               className="absolute flex flex-col items-center select-none"
               style={{
                 left: '71.2%',
-                top: '68.2%',
+                top: '71.8%',
                 transform: 'translate(-50%, -50%)',
-                width: '20.5%',
-                maxWidth: '122px',
+                width: '15.2%',
+                maxWidth: '92px',
                 zIndex: 20,
               }}
             >
@@ -899,9 +899,9 @@ export default function FrameScrollCanvas({
                 />
 
                 {/* Bold, prominent 'Click here' text at bottom of the wax seal */}
-                <div className="mt-1.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-lg sm:text-xl md:text-2xl font-bold text-[#2e1709] group-hover:text-[#5c2e0f] tracking-wide whitespace-nowrap leading-none transition-all group-hover:scale-105"
+                    className="font-script text-base sm:text-lg md:text-xl font-bold text-[#2e1709] group-hover:text-[#5c2e0f] tracking-wide whitespace-nowrap leading-none transition-all group-hover:scale-105"
                     style={{
                       fontWeight: 700,
                       textShadow: '0 1px 2px rgba(255, 255, 255, 0.8), 0 0 1px rgba(46, 23, 9, 0.4)',
