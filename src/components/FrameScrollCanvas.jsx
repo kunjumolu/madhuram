@@ -865,10 +865,10 @@ export default function FrameScrollCanvas({
               className="absolute flex flex-col items-center select-none"
               style={{
                 left: '71.2%',
-                top: '71.8%',
+                top: '68.2%',
                 transform: 'translate(-50%, -50%)',
-                width: '15.2%',
-                maxWidth: '92px',
+                width: '20.5%',
+                maxWidth: '122px',
                 zIndex: 20,
               }}
             >
@@ -891,19 +891,20 @@ export default function FrameScrollCanvas({
                 <img
                   src="/rsvp button.png"
                   alt="RSVP Button"
-                  className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-200"
+                  className="w-full h-auto object-contain select-none pointer-events-none transition-transform duration-200 group-hover:scale-105 active:scale-95"
                   style={{
                     filter: 'none',
                     boxShadow: 'none',
                   }}
                 />
 
-                {/* Small 'Click here' text at bottom of the button in same font */}
-                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                {/* Bold, prominent 'Click here' text at bottom of the wax seal */}
+                <div className="mt-1.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-sm sm:text-base md:text-lg font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
+                    className="font-script text-lg sm:text-xl md:text-2xl font-bold text-[#2e1709] group-hover:text-[#5c2e0f] tracking-wide whitespace-nowrap leading-none transition-all group-hover:scale-105"
                     style={{
-                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+                      fontWeight: 700,
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.8), 0 0 1px rgba(46, 23, 9, 0.4)',
                     }}
                   >
                     Click here
