@@ -898,12 +898,12 @@ export default function FrameScrollCanvas({
                   }}
                 />
 
-                {/* Small 'Click here' text at bottom of the button in same font */}
-                <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
+                {/* 'Click here' text at bottom of the button in script font */}
+                <div className="mt-1.5 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-sm sm:text-base md:text-lg font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
+                    className="font-script text-xl sm:text-2xl md:text-3xl font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
                     style={{
-                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.7)',
                     }}
                   >
                     Click here
