@@ -898,13 +898,12 @@ export default function FrameScrollCanvas({
                   }}
                 />
 
-                {/* Bold, prominent 'Click here' text at bottom of the wax seal */}
+                {/* Small 'Click here' text at bottom of the button in same font */}
                 <div className="mt-1 flex flex-col items-center select-none group-hover:opacity-100 transition-opacity">
                   <span
-                    className="font-script text-base sm:text-lg md:text-xl font-bold text-[#2e1709] group-hover:text-[#5c2e0f] tracking-wide whitespace-nowrap leading-none transition-all group-hover:scale-105"
+                    className="font-script text-sm sm:text-base md:text-lg font-normal text-[#3d2514] group-hover:text-[#6b3f1f] tracking-wide whitespace-nowrap leading-none transition-colors"
                     style={{
-                      fontWeight: 700,
-                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.8), 0 0 1px rgba(46, 23, 9, 0.4)',
+                      textShadow: '0 1px 2px rgba(255, 255, 255, 0.6)',
                     }}
                   >
                     Click here
